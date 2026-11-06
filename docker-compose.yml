@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ipl_league
+      POSTGRES_USER: ipl
+      POSTGRES_PASSWORD: ipl
+    ports:
+      # Set DB_PORT (and DB_URL for the backend) if something else already uses 5432 on this machine.
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

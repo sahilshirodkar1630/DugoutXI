@@ -1,0 +1,23 @@
+target/
+*.class
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.local
+frontend/.env.local
+
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Never commit a real signing key or database password.
+.env
+
+# Personal Claude Code settings; the shared launch.json is committed.
+.claude/settings.local.json
+
+# Local environment overrides, wherever they are.
+*.local
+*.log

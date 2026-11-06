@@ -1,0 +1,5 @@
+# Keep LF line endings in the repository whatever the platform; the files are written that way.
+* text=auto eol=lf
+*.xlsx binary
+*.png binary
+*.jpg binary
