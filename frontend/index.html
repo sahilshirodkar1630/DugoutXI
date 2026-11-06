@@ -4,8 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="Predict IPL winners with your friends, and keep track of who owes what." />
     <title>Dugout XI</title>
+    <script>
+      // A saved Day/Dark choice (src/lib/theme.ts) is applied before the page draws, so there is no flash.
+      try {
+        var mode = localStorage.getItem('dugout.theme');
+        if (mode === 'light' || mode === 'dark') document.documentElement.dataset.theme = mode;
+      } catch (e) {}
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- The phone browser bar takes the top bar colour, light or dark. -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161b22" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="Pick the winner of every match with your friends. Dugout XI keeps the score and the money straight." />
   </head>
   <body>

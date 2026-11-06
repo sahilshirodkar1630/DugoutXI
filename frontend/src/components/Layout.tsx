@@ -3,6 +3,8 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { notifications } from '../api/endpoints';
 import { useAuth } from '../auth/useAuth';
 import { labelTables } from '../lib/tableLabels';
+import { BrandMark } from './BrandMark';
+import { ThemeToggle } from './ThemeToggle';
 
 /**
  * The frame every signed-in screen sits in.
@@ -58,6 +60,7 @@ export function Layout() {
       <header className="topbar">
         <div className="topbar-inner">
           <Link to="/" className="brand">
+            <BrandMark />
             Dugout XI
           </Link>
           <nav className="nav">
@@ -69,6 +72,7 @@ export function Layout() {
             {user?.role === 'ADMIN' && <NavLink to="/admin">Admin</NavLink>}
           </nav>
           <div className="row gap topbar-end">
+            <ThemeToggle />
             <Link
               to="/notifications"
               className="btn btn-quiet bell hide-phone"

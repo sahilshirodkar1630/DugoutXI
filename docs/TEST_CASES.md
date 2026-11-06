@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**309 backend tests across 30 classes, 62 frontend tests across 10 files.**
+**309 backend tests across 30 classes, 64 frontend tests across 11 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -545,6 +545,13 @@ The first admins come from server configuration (app.admin-emails), never from a
 
 - Does not send two new passwords that differ
 - Swaps in the new token the backend returns
+
+### ThemeToggle.test.tsx (2 tests)
+
+`src/components/ThemeToggle.test.tsx`
+
+- Switches to dark and back, remembering each choice
+- Starts from the phone setting when nothing was chosen
 
 ### format.test.ts (10 tests)
 

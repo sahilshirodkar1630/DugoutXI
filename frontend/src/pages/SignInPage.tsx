@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { auth } from '../api/endpoints';
 import { useAuth } from '../auth/useAuth';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { Card, ErrorNote, Field, InfoNote } from '../components/ui';
 import { useAction } from '../hooks/useLoad';
 
@@ -42,6 +43,9 @@ export function SignInPage() {
 
   return (
     <div className="auth-shell">
+      <div className="auth-corner">
+        <ThemeToggle />
+      </div>
       <Card
         className="auth-card"
         title={mode === 'sign-in' ? 'Sign in' : 'Create an account'}

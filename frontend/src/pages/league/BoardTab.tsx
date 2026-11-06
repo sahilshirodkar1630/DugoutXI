@@ -57,7 +57,9 @@ export function BoardTab({ leagueId }: { leagueId: number }) {
             {data.rows.length === 0 ? (
               <Empty>Nobody has played a contest yet.</Empty>
             ) : (
-              <div className="table-wrap">
+              // On a phone this stays a table (rank, player, W, L, net) rather than a stack of cards: a leaderboard is
+              // read top to bottom at a glance. The other columns are in the Excel export and on a wider screen.
+              <div className="table-wrap keep-table">
                 <table>
                   <thead>
                     <tr>
@@ -65,30 +67,30 @@ export function BoardTab({ leagueId }: { leagueId: number }) {
                       <th>Player</th>
                       <th className="num">W</th>
                       <th className="num">L</th>
-                      <th className="num">Ref</th>
-                      <th className="num">Won</th>
-                      <th className="num">Spent</th>
+                      <th className="num hide-phone">Ref</th>
+                      <th className="num hide-phone">Won</th>
+                      <th className="num hide-phone">Spent</th>
                       <th className="num">Net</th>
-                      <th className="num">Balance</th>
-                      <th>Settled</th>
+                      <th className="num hide-phone">Balance</th>
+                      <th className="hide-phone">Settled</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.rows.map((row) => (
                       <tr key={row.userId} className={row.me ? 'is-me' : undefined}>
-                        <td>{row.rank}</td>
+                        <td className="rank">{row.rank}</td>
                         <td>
                           {row.displayName}
                           {row.me && <span className="muted small"> (you)</span>}
                         </td>
                         <td className="num">{row.wonCount}</td>
                         <td className="num">{row.lostCount}</td>
-                        <td className="num">{row.refundedCount}</td>
-                        <td className="num">{money(row.winnings)}</td>
-                        <td className="num">{money(row.entriesSpent)}</td>
+                        <td className="num hide-phone">{row.refundedCount}</td>
+                        <td className="num hide-phone">{money(row.winnings)}</td>
+                        <td className="num hide-phone">{money(row.entriesSpent)}</td>
                         <td className={`num tone-${sign(row.netPl)}`}>{signedMoney(row.netPl)}</td>
-                        <td className="num">{money(row.runningBalance)}</td>
-                        <td>{row.settlementStatus ? <Status value={row.settlementStatus} /> : <span className="muted">—</span>}</td>
+                        <td className="num hide-phone">{money(row.runningBalance)}</td>
+                        <td className="hide-phone">{row.settlementStatus ? <Status value={row.settlementStatus} /> : <span className="muted">—</span>}</td>
                       </tr>
                     ))}
                   </tbody>

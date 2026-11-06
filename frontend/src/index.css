@@ -7,14 +7,16 @@
  */
 
 :root {
-  --bg: #f5f6f8;
+  color-scheme: light dark;
+  --bg: #f3f5f8;
   --surface: #ffffff;
-  --surface-2: #f0f2f5;
-  --border: #dfe3e8;
+  --surface-2: #eef1f5;
+  --border: #e1e5eb;
   --text: #14181f;
   --text-muted: #5c6673;
   --accent: #1f6feb;
   --accent-contrast: #ffffff;
+  --bail: #d99a00;
   --good: #12794a;
   --good-bg: #e2f5ea;
   --bad: #b4231f;
@@ -25,7 +27,8 @@
   --info-bg: #e3f0f9;
   --radius: 10px;
   --radius-sm: 6px;
-  --shadow: 0 1px 2px rgb(16 24 40 / 6%), 0 1px 3px rgb(16 24 40 / 10%);
+  --shadow: 0 1px 2px rgb(16 24 40 / 5%), 0 2px 6px rgb(16 24 40 / 6%);
+  --font: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -39,6 +42,7 @@
     --text-muted: #9aa5b1;
     --accent: #4b8bf4;
     --accent-contrast: #0d1117;
+  --bail: #ffc857;
     --good: #4ddc92;
     --good-bg: #10301f;
     --bad: #ff8781;
@@ -51,7 +55,12 @@
   }
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
 :root[data-theme='dark'] {
+  color-scheme: dark;
   --bg: #0d1117;
   --surface: #161b22;
   --surface-2: #1c2230;
@@ -60,6 +69,7 @@
   --text-muted: #9aa5b1;
   --accent: #4b8bf4;
   --accent-contrast: #0d1117;
+  --bail: #ffc857;
   --good: #4ddc92;
   --good-bg: #10301f;
   --bad: #ff8781;
@@ -79,8 +89,10 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font);
   font-size: 15px;
+  /* Inter: open digits and a straight-legged 1 read better in money columns. */
+  font-feature-settings: 'cv05', 'cv11';
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -90,10 +102,12 @@ h2,
 h3 {
   margin: 0;
   line-height: 1.25;
+  letter-spacing: -0.015em;
 }
 
 h1 {
   font-size: 1.5rem;
+  font-weight: 700;
 }
 
 h2 {
@@ -140,7 +154,11 @@ a:hover {
   flex-wrap: wrap;
 }
 
+/* The mark and the name together; the mark alone is the app icon. */
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text);
@@ -607,10 +625,11 @@ tr.is-me {
   border-color: var(--accent);
 }
 
+/* Your pick is green, the one cricket touch: the colour of the field and of a win. */
 .pick-chosen {
-  border-color: var(--accent);
-  background: var(--info-bg);
-  color: var(--info);
+  border-color: var(--good);
+  background: var(--good-bg);
+  color: var(--good);
 }
 
 .pick:disabled {
@@ -847,7 +866,8 @@ tr.is-me {
   }
 
   .stat-value {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
     overflow-wrap: anywhere;
   }
 
@@ -955,6 +975,52 @@ tr.is-me {
     justify-content: flex-end;
   }
 
+  /* A table marked keep-table stays a table on a phone (its extra columns are hidden with hide-phone). */
+  .table-wrap.keep-table table {
+    display: table;
+  }
+
+  .table-wrap.keep-table thead {
+    display: table-header-group;
+  }
+
+  .table-wrap.keep-table tbody {
+    display: table-row-group;
+  }
+
+  .table-wrap.keep-table tr {
+    display: table-row;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .table-wrap.keep-table :is(td, th) {
+    display: table-cell;
+    width: auto;
+    padding: 10px 6px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    text-align: inherit;
+  }
+
+  .table-wrap.keep-table td.num,
+  .table-wrap.keep-table th.num {
+    text-align: right;
+  }
+
+  .table-wrap.keep-table td::before {
+    display: none;
+  }
+
+  .table-wrap.keep-table td:first-child {
+    font-weight: 700;
+  }
+
+  .table-wrap.keep-table .hide-phone {
+    display: none;
+  }
+
   /* Dialogs slide up from the bottom, within reach of a thumb. */
   .modal-backdrop {
     align-items: flex-end;
@@ -977,4 +1043,34 @@ tr.is-me {
     align-items: flex-start;
     padding-top: 10vh;
   }
+}
+
+/* ---------- the Day / Dark switch ---------- */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.theme-toggle svg {
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .theme-toggle-label {
+    display: none;
+  }
+}
+
+.auth-shell {
+  position: relative;
+}
+
+.auth-corner {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  right: 12px;
 }
