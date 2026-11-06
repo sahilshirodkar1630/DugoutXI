@@ -45,9 +45,9 @@ sessions. The tables are created by the app itself (Flyway) on its first start.
 2. **Root Directory: `frontend`.** Vercel then detects Vite: build `npm run build`, output `dist`. No environment
    variables are needed: `frontend/.env.production` makes the app call `/api` on its own site, and `vercel.json` forwards
    those calls to Render.
-3. **Deploy.** Note the address, e.g. `https://dugout-xi.vercel.app`.
+3. **Deploy.** Note the address Vercel gives, e.g. `https://dugout-xi-gamma.vercel.app`: when a name is taken Vercel adds a word to it, so copy the real one.
 4. Back in Render → the service → **Environment**: set `CORS_ALLOWED_ORIGINS` to that exact address (no trailing slash)
-   and save. Render redeploys.
+   and save. Render redeploys. If this does not match the site exactly, every call fails with **Invalid CORS request**.
 
 ## 4. cron-job.org: keep it awake
 
