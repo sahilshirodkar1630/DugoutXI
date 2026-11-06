@@ -27,7 +27,7 @@ describe('AboutPage', () => {
       expect.stringContaining('mailto:sahilshirodkar1630@gmail.com'),
     );
     expect(screen.getByRole('link', { name: 'Call 9867141653' })).toHaveAttribute('href', 'tel:+919867141653');
-    expect(screen.getByRole('link', { name: 'WhatsApp' })).toHaveAttribute('href', 'https://wa.me/919867141653');
+    expect(screen.queryByRole('link', { name: 'WhatsApp' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
       'href',
       'https://www.linkedin.com/in/sahilshirodkar/',

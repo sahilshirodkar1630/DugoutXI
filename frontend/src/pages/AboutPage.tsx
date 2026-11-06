@@ -15,7 +15,6 @@ const CONTACT = {
   name: 'Sahil Shirodkar',
   email: 'sahilshirodkar1630@gmail.com',
   phone: '9867141653',
-  whatsapp: '919867141653',
   linkedin: 'https://www.linkedin.com/in/sahilshirodkar/',
 };
 
@@ -55,9 +54,6 @@ export function AboutPage({ standalone = false }: { standalone?: boolean }) {
           </a>
           <a className="btn" href={`tel:+91${CONTACT.phone}`}>
             Call {CONTACT.phone}
-          </a>
-          <a className="btn" href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer">
-            WhatsApp
           </a>
           <a className="btn" href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer">
             LinkedIn
