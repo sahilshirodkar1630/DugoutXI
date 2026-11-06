@@ -1,13 +1,13 @@
 # Deploying Dugout XI for free
 
-Four free services, about 30 minutes the first time:
+Three free services, about 30 minutes the first time:
 
 | Part | Service | Why |
 | --- | --- | --- |
 | Database | **Supabase** (free, Singapore) | Real PostgreSQL, 500 MB, no compute-hour limit. The jobs query it every 20 seconds, which would use up Neon's free hours. |
 | Backend | **Render** (free web service, Docker) | Builds `Dockerfile` from `render.yaml`. 512 MB is enough: the app uses about 210 MB. |
 | Frontend | **Vercel** (Hobby) | Serves the React build and forwards `/api/*` to Render (`frontend/vercel.json`), so the browser sees one site. |
-| Keep-awake | **cron-job.org** (free) | Calls `/api/health` every 10 minutes. Render puts a free service to sleep after 15 idle minutes, and the scheduled jobs (locking matches, reminders) only run while it is awake. |
+| Keep-awake | **Supabase's scheduler** (pg_cron + pg_net) | Calls `/api/health` every 10 minutes. Render puts a free service to sleep after 15 idle minutes, and the scheduled jobs (locking matches, reminders) only run while it is awake. |
 
 Nothing here costs money. Secrets are typed into each service's dashboard and are never committed.
 
@@ -49,15 +49,31 @@ sessions. The tables are created by the app itself (Flyway) on its first start.
 4. Back in Render → the service → **Environment**: set `CORS_ALLOWED_ORIGINS` to that exact address (no trailing slash)
    and save. Render redeploys. If this does not match the site exactly, every call fails with **Invalid CORS request**.
 
-## 4. cron-job.org: keep it awake
+## 4. Keep it awake (from Supabase)
 
-1. **Create cronjob.** URL `https://<your-service>.onrender.com/api/health`, every **10 minutes**.
-2. Save. Its history should show `200` each time.
+Render puts a free service to sleep after 15 idle minutes, and waking takes about a minute and a half, longer than
+Vercel waits for the /api forwarding. The scheduled jobs (locking matches, reminders) also only run while it is awake.
+The database itself pings the backend every 10 minutes, using Supabase's built-in scheduler, so no other account is
+needed. In Supabase: **SQL Editor → New query**, paste and **Run**:
 
-750 free Render hours a month cover one service running all month.
+```sql
+create extension if not exists pg_cron with schema pg_catalog;
+create extension if not exists pg_net with schema extensions;
 
-A second, backup ping runs from the repository itself (`.github/workflows/keep-awake.yml`, every 10 minutes). GitHub can run
-scheduled jobs late and pauses them after 60 days without commits, so it backs up cron-job.org rather than replacing it.
+select cron.unschedule(jobid) from cron.job where jobname = 'keep-dugout-awake';
+select cron.schedule(
+  'keep-dugout-awake',
+  '*/10 * * * *',
+  $$ select net.http_get('https://dugout-xi-api.onrender.com/api/health', timeout_milliseconds := 90000) $$
+);
+```
+
+To check it is working: `select status_code, created from net._http_response order by id desc limit 5;` should show
+`200` every 10 minutes. To stop it: `select cron.unschedule('keep-dugout-awake');`
+
+The site also nudges the backend awake whenever someone opens it, and retries sign-in while it wakes, so a missed ping
+costs a slow first sign-in, not a failed one. A GitHub Actions workflow (`.github/workflows/keep-awake.yml`) is a
+second, backup ping; GitHub can run scheduled jobs late or pause them after 60 days without commits.
 
 ## 5. Check it
 
