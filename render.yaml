@@ -1,0 +1,31 @@
+# Render blueprint for the backend. In Render: New → Blueprint → pick this repository. Render reads this file, builds
+# the Dockerfile, and asks for the values marked sync: false (the secrets), which are never stored in the repository.
+# Step-by-step: docs/DEPLOY.md.
+services:
+  - type: web
+    name: dugout-xi-api
+    runtime: docker
+    plan: free
+    region: singapore          # the closest Render region to India
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true            # every push to main redeploys
+    envVars:
+      - key: DB_URL             # jdbc:postgresql://<supabase-pooler-host>:5432/postgres?sslmode=require
+        sync: false
+      - key: DB_USER            # postgres.<project-ref>
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET         # a long random string; changing it signs everybody out
+        sync: false
+      - key: ADMIN_EMAILS       # your email, so your account is an admin from the start
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS   # the Vercel address, e.g. https://dugout-xi.vercel.app
+        sync: false
+      - key: API_DOCS_ENABLED
+        value: "false"
+      - key: DEV_TOOLS_ENABLED
+        value: "false"
+      - key: JOBS_ENABLED
+        value: "true"

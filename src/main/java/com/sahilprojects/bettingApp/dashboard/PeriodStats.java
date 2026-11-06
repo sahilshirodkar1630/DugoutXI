@@ -1,6 +1,7 @@
 package com.sahilprojects.bettingApp.dashboard;
 
 import com.sahilprojects.bettingApp.dashboard.dto.PeriodStatsResponse;
+import com.sahilprojects.bettingApp.dashboard.dto.PeriodStatsResponse.Breakdown;
 import com.sahilprojects.bettingApp.dashboard.dto.PeriodStatsResponse.MonthLine;
 
 import java.math.BigDecimal;
@@ -34,14 +35,19 @@ public final class PeriodStats {
         int streak = 0, bestStreak = 0, current = 0;
         Set<Long> leagues = new HashSet<>();
         Map<YearMonth, MonthAcc> months = new TreeMap<>();
+        KindAcc leagueKind = new KindAcc(), oneOffKind = new KindAcc();
 
         for (MyResultRow r : sorted) {
+            KindAcc kind = r.leagueId() != null ? leagueKind : oneOffKind;
+            if (r.leagueId() != null) leagues.add(r.leagueId());
             if (r.result() == null) {
                 pending++;
+                kind.pending++;
                 continue;
             }
             if ("REFUNDED".equals(r.result())) {
                 refunded++;
+                kind.refunded++;
                 continue;
             }
             boolean win = "WON".equals(r.result());
@@ -49,8 +55,8 @@ public final class PeriodStats {
             invested = invested.add(r.entrySpent());
             winnings = winnings.add(r.winningAmount());
             BigDecimal net = r.net();
+            kind.add(win, r.entrySpent(), r.winningAmount());
             if (r.leagueId() != null) {
-                leagues.add(r.leagueId());
                 leagueGames++;
                 leaguePl = leaguePl.add(net);
             } else {
@@ -84,6 +90,7 @@ public final class PeriodStats {
                 percentage(netPl, invested),
                 biggestWin, bestStreak, current,
                 leagues.size(), leagueGames, oneOffGames, leaguePl, oneOffPl,
+                leagueKind.toBreakdown(), oneOffKind.toBreakdown(),
                 monthLines);
     }
 
@@ -91,6 +98,30 @@ public final class PeriodStats {
     static BigDecimal percentage(BigDecimal part, BigDecimal whole) {
         if (whole.signum() == 0) return BigDecimal.ZERO.setScale(1);
         return part.multiply(BigDecimal.valueOf(100)).divide(whole, 1, RoundingMode.HALF_UP);
+    }
+
+    /** The same record for one kind of game: leagues, or one-off contests. */
+    private static final class KindAcc {
+        int won;
+        int lost;
+        int refunded;
+        int pending;
+        BigDecimal invested = BigDecimal.ZERO;
+        BigDecimal winnings = BigDecimal.ZERO;
+
+        void add(boolean win, BigDecimal spent, BigDecimal winning) {
+            if (win) won++; else lost++;
+            invested = invested.add(spent);
+            winnings = winnings.add(winning);
+        }
+
+        Breakdown toBreakdown() {
+            int played = won + lost;
+            BigDecimal net = winnings.subtract(invested);
+            return new Breakdown(played, won, lost, refunded, pending,
+                    percentage(BigDecimal.valueOf(won), BigDecimal.valueOf(played)),
+                    invested, winnings, net, percentage(net, invested));
+        }
     }
 
     private static final class MonthAcc {

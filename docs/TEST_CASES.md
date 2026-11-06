@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**309 backend tests across 30 classes, 64 frontend tests across 11 files.**
+**310 backend tests across 30 classes, 64 frontend tests across 11 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -16,12 +16,13 @@ cd frontend && npm test  # the frontend
 
 ## Backend
 
-### ApiEdgeCasesTest (integration, 19 tests)
+### ApiEdgeCasesTest (integration, 20 tests)
 
 `ApiEdgeCasesTest.java`
 
 The edges of the API that no single feature test owns: what comes back for malformed requests, the response fields the screens rely on, the admin listings, and the gaps found while reviewing the services.
 
+- The Health Check Answers Without Signing In
 - The Api Reference Is Off By Default
 - Broken Json Is A 400 With A Detail
 - A Date That Does Not Parse Is A 400

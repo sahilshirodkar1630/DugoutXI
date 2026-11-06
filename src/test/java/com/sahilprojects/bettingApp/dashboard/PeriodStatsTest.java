@@ -50,6 +50,20 @@ class PeriodStatsTest {
         assertThat(s.oneOffContestsPlayed()).isEqualTo(1);
         assertThat(s.leagueNetPl()).isEqualByComparingTo("100");
         assertThat(s.oneOffNetPl()).isEqualByComparingTo("-50");
+
+        // The same figures split by kind of game, for showing leagues and one-off contests apart.
+        assertThat(s.leagues().played()).isEqualTo(2);
+        assertThat(s.leagues().won()).isEqualTo(1);
+        assertThat(s.leagues().invested()).isEqualByComparingTo("200");
+        assertThat(s.leagues().amountWon()).isEqualByComparingTo("300");
+        assertThat(s.leagues().netPl()).isEqualByComparingTo("100");
+        assertThat(s.leagues().winPercentage()).isEqualByComparingTo("50.0");
+        assertThat(s.leagues().pending()).isEqualTo(1);
+        assertThat(s.oneOff().played()).isEqualTo(1);
+        assertThat(s.oneOff().lost()).isEqualTo(1);
+        assertThat(s.oneOff().refunded()).isEqualTo(1);
+        assertThat(s.oneOff().netPl()).isEqualByComparingTo("-50");
+        assertThat(s.oneOff().returnPercentage()).isEqualByComparingTo("-100.0");
     }
 
     @Test

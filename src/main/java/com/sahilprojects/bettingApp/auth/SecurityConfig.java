@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/health", "/error").permitAll()
                         // The API reference. These paths only exist when springdoc.api-docs.enabled is true.
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/docs", "/docs/").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

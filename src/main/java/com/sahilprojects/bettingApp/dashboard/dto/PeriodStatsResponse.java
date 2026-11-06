@@ -33,7 +33,18 @@ public record PeriodStatsResponse(
         int oneOffContestsPlayed,
         BigDecimal leagueNetPl,
         BigDecimal oneOffNetPl,
+        Breakdown leagues,
+        Breakdown oneOff,
         List<MonthLine> months) {
+
+    /**
+     * The record for one kind of game, so leagues and one-off contests can be shown apart. leaguesPlayed above says
+     * how many leagues the league figures came from.
+     */
+    public record Breakdown(int played, int won, int lost, int refunded, int pending, BigDecimal winPercentage,
+                            BigDecimal invested, BigDecimal amountWon, BigDecimal netPl,
+                            BigDecimal returnPercentage) {
+    }
 
     /** One calendar month, as "2026-04". */
     public record MonthLine(String month, int played, int won, BigDecimal invested, BigDecimal netPl) {

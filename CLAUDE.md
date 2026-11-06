@@ -37,7 +37,7 @@ docker compose up -d                                                    # Postgr
 mvn spring-boot:run                                                     # backend on 8080
 mvn spring-boot:run -Dspring-boot.run.arguments=--app.dev-tools.enabled=true   # plus the dev shortcuts
 API_DOCS_ENABLED=true mvn spring-boot:run                               # plus the API reference at /docs
-mvn test                                                                # 328 tests, needs Docker
+mvn test                                                                # 329 tests, needs Docker
 cd frontend && npm install && npm run dev                               # frontend on 5173
 cd frontend && npm test && npm run typecheck && npm run lint && npm run build
 node scripts/generate-test-cases.mjs                                    # rebuild docs/TEST_CASES.md
@@ -178,7 +178,7 @@ either, change both:
 
 ## Tests
 
-328 backend (as Maven counts them), 64 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
+329 backend (as Maven counts them), 64 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
 migration, so triggers, generated columns and views are exercised rather than mocked. **Docker must be running.**
 
 `src/test/java/.../EndToEndJourneyTest.java` is the one to read first: a whole season through the real API, ending

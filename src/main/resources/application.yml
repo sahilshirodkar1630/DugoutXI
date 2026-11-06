@@ -1,3 +1,13 @@
+server:
+  # Hosts such as Render say which port to listen on in PORT.
+  port: ${PORT:8080}
+  # Behind a host's proxy: trust its X-Forwarded-* headers for the scheme and client address.
+  forward-headers-strategy: framework
+  tomcat:
+    threads:
+      # A small server (512 MB on a free host) does not need Tomcat's default 200 threads.
+      max: ${TOMCAT_MAX_THREADS:50}
+
 spring:
   application:
     name: dugout-xi
@@ -5,6 +15,10 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/ipl_league}
     username: ${DB_USER:ipl}
     password: ${DB_PASSWORD:ipl}
+    hikari:
+      # Free hosted databases allow few connections; the jobs and 20-30 players need far fewer than the default 10.
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      minimum-idle: 1
   jpa:
     open-in-view: false
     hibernate:

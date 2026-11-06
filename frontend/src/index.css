@@ -1074,3 +1074,223 @@ tr.is-me {
   top: calc(12px + env(safe-area-inset-top));
   right: 12px;
 }
+
+/* ---------- segmented control (a short set of choices, such as a period) ---------- */
+
+.segmented {
+  display: inline-flex;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented button {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 5px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  min-height: 0;
+}
+
+.segmented button.segmented-on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.segmented button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- the record on the profile ---------- */
+
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.record-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.record-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.record-total {
+  font-size: 2.1rem;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.record-bar-won {
+  background: var(--good);
+}
+
+.record-bar-lost {
+  background: var(--bad);
+}
+
+.record-bar-refunded {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.record-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 8px;
+  color: var(--text-muted);
+}
+
+.record-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-right: 4px;
+}
+
+.dot-won {
+  background: var(--good);
+}
+
+.dot-lost {
+  background: var(--bad);
+}
+
+.dot-refunded {
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.record-streak {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* A row of figures split by hairlines: lighter than a grid of boxes, and it reads left to right. */
+.figures {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.figure {
+  padding: 0 12px;
+  min-width: 0;
+}
+
+.figure:first-child {
+  padding-left: 0;
+}
+
+.figure + .figure {
+  border-left: 1px solid var(--border);
+}
+
+.figure dt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.figure dd {
+  margin: 2px 0 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.figure dd.figure-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .figure {
+    padding: 0 8px;
+  }
+
+  .figure dd {
+    font-size: 0.95rem;
+  }
+
+  .record-total {
+    font-size: 1.9rem;
+  }
+}
+
+/* Leagues and one-off contests, each in its own block. */
+.kind {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.kind-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.kind-head h3 {
+  font-size: 0.95rem;
+}
+
+.kind-head strong {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.figures.figures-tight {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.kind .figure + .figure {
+  border-left-color: var(--border);
+}
+
+.kind-money {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.kind-money strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}

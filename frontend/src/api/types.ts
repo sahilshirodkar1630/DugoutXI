@@ -405,6 +405,20 @@ export interface TemporaryPassword {
 
 export type StatsRange = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS' | 'ONE_YEAR' | 'ALL';
 
+/** Mirrors PeriodStatsResponse.Breakdown: one kind of game (leagues, or one-off contests). */
+export interface StatsBreakdown {
+  played: number;
+  won: number;
+  lost: number;
+  refunded: number;
+  pending: number;
+  winPercentage: string;
+  invested: string;
+  amountWon: string;
+  netPl: string;
+  returnPercentage: string;
+}
+
 /** Mirrors PeriodStatsResponse. Money is a string, as everywhere. */
 export interface PeriodStats {
   range: StatsRange;
@@ -428,6 +442,9 @@ export interface PeriodStats {
   oneOffContestsPlayed: number;
   leagueNetPl: string;
   oneOffNetPl: string;
+  /** The same record split by kind of game. */
+  leagues: StatsBreakdown;
+  oneOff: StatsBreakdown;
   months: { month: string; played: number; won: number; invested: string; netPl: string }[];
 }
 

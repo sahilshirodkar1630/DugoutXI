@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { dashboard, users } from '../api/endpoints';
-import type { PeriodStats, StatsRange } from '../api/types';
+import type { PeriodStats, StatsBreakdown, StatsRange } from '../api/types';
 import { useAuth } from '../auth/useAuth';
 import { ChangePasswordForm } from '../components/ChangePasswordForm';
-import { Card, Empty, ErrorNote, Field, InfoNote, Loader, Stat, Tabs } from '../components/ui';
+import { Card, Empty, ErrorNote, Field, InfoNote, Loader } from '../components/ui';
 import { useAction, useLoad } from '../hooks/useLoad';
 import { money, onDate, sign, signedMoney } from '../lib/format';
 
-const RANGES: { id: StatsRange; label: string }[] = [
-  { id: 'ONE_MONTH', label: '1 month' },
-  { id: 'THREE_MONTHS', label: '3 months' },
-  { id: 'SIX_MONTHS', label: '6 months' },
-  { id: 'ONE_YEAR', label: '1 year' },
-  { id: 'ALL', label: 'All time' },
+const RANGES: { id: StatsRange; short: string; long: string }[] = [
+  { id: 'ONE_MONTH', short: '1M', long: 'the last month' },
+  { id: 'THREE_MONTHS', short: '3M', long: 'the last 3 months' },
+  { id: 'SIX_MONTHS', short: '6M', long: 'the last 6 months' },
+  { id: 'ONE_YEAR', short: '1Y', long: 'the last year' },
+  { id: 'ALL', short: 'All', long: 'all time' },
 ];
 
 /**
@@ -33,7 +33,7 @@ export function ProfilePage() {
           <h1>{user?.displayName ?? 'Your profile'}</h1>
           <p className="muted small">{user?.email}</p>
         </div>
-        <button type="button" className="btn" onClick={signOut}>
+        <button type="button" className="btn btn-small" onClick={signOut}>
           Sign out
         </button>
       </div>
@@ -53,67 +53,129 @@ export function ProfilePage() {
 }
 
 function StatsCard() {
-  const [range, setRange] = useState<StatsRange>('ONE_MONTH');
+  const [range, setRange] = useState<StatsRange>('ALL');
   const stats = useLoad(() => dashboard.periodStats(range), [range]);
 
   return (
-    <Card title="Your record" subtitle="Contests are counted by the date they were played.">
-      <Tabs<StatsRange> active={range} onChange={setRange} tabs={RANGES} />
-      <Loader state={stats}>{(data) => <StatsBody stats={data} />}</Loader>
+    <Card
+      title="Your record"
+      actions={
+        <div className="segmented" role="radiogroup" aria-label="Period">
+          {RANGES.map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              role="radio"
+              aria-checked={range === r.id}
+              aria-label={r.long}
+              className={range === r.id ? 'segmented-on' : undefined}
+              onClick={() => setRange(r.id)}
+            >
+              {r.short}
+            </button>
+          ))}
+        </div>
+      }
+    >
+      <Loader state={stats}>
+        {(data) => <StatsBody stats={data} period={RANGES.find((r) => r.id === range)?.long ?? ''} />}
+      </Loader>
     </Card>
   );
 }
 
-function StatsBody({ stats }: { stats: PeriodStats }) {
+/**
+ * The record, most important first: one big profit or loss figure, a bar of wins against losses, then three short
+ * rows (how you play, the money, where you play). Contests count by the date they were played.
+ */
+function StatsBody({ stats, period }: { stats: PeriodStats; period: string }) {
   if (stats.contestsPlayed === 0 && stats.contestsRefunded === 0 && stats.contestsPending === 0) {
-    return <Empty>No contests in this period yet.</Empty>;
+    return <Empty>No contests in {period} yet.</Empty>;
   }
+  const decided = stats.contestsWon + stats.contestsLost + stats.contestsRefunded;
+  const share = (n: number) => (decided === 0 ? 0 : (n * 100) / decided);
   const streak =
     stats.currentStreak > 0
-      ? `${stats.currentStreak} won in a row`
+      ? `On a run: ${stats.currentStreak} won in a row`
       : stats.currentStreak < 0
         ? `${-stats.currentStreak} lost in a row`
-        : undefined;
+        : null;
 
   return (
-    <>
-      <div className="grid-stats">
-        <Stat
-          label="Profit / loss"
-          value={signedMoney(stats.netPl)}
-          tone={sign(stats.netPl)}
-          hint={`${stats.returnPercentage}% on money put in`}
-        />
-        <Stat label="Played" value={stats.contestsPlayed} hint={streak} />
-        <Stat label="Won" value={stats.contestsWon} hint={`${stats.winPercentage}% of played`} />
-        <Stat label="Lost" value={stats.contestsLost} />
-        <Stat label="Money put in" value={money(stats.amountInvested)} hint="Entries in decided contests" />
-        <Stat label="Money won" value={money(stats.amountWon)} />
-        <Stat label="Biggest win" value={signedMoney(stats.biggestWin)} tone={sign(stats.biggestWin)} />
-        <Stat label="Best streak" value={stats.bestStreak} hint="Wins in a row" />
-        <Stat
-          label="Leagues"
-          value={stats.leaguesPlayed}
-          hint={`${stats.leagueContestsPlayed} matches, ${signedMoney(stats.leagueNetPl)}`}
-        />
-        <Stat
-          label="One-off contests"
-          value={stats.oneOffContestsPlayed}
-          hint={signedMoney(stats.oneOffNetPl)}
-        />
-        <Stat label="Refunded" value={stats.contestsRefunded} hint="Not counted as played" />
-        <Stat label="Waiting for a result" value={stats.contestsPending} />
+    <div className="record">
+      <div className="record-hero">
+        <span className="record-label">Profit / loss over {period}</span>
+        <strong className={`record-total tone-${sign(stats.netPl)}`}>{signedMoney(stats.netPl)}</strong>
+        <span className="muted small">
+          {stats.contestsPlayed > 0
+            ? `${stats.returnPercentage}% on ${money(stats.amountInvested)} put in`
+            : 'Nothing decided yet'}
+        </span>
       </div>
 
+      {decided > 0 && (
+        <div className="record-bar-wrap">
+          <div className="record-bar" aria-hidden="true">
+            <span className="record-bar-won" style={{ width: `${share(stats.contestsWon)}%` }} />
+            <span className="record-bar-lost" style={{ width: `${share(stats.contestsLost)}%` }} />
+            <span className="record-bar-refunded" style={{ width: `${share(stats.contestsRefunded)}%` }} />
+          </div>
+          <div className="record-legend small">
+            <span>
+              <i className="dot-won" /> {stats.contestsWon} won
+            </span>
+            <span>
+              <i className="dot-lost" /> {stats.contestsLost} lost
+            </span>
+            {stats.contestsRefunded > 0 && (
+              <span>
+                <i className="dot-refunded" /> {stats.contestsRefunded} refunded
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {streak && <p className={`record-streak tone-${stats.currentStreak > 0 ? 'up' : 'down'}`}>{streak}</p>}
+
+      <dl className="figures">
+        <Figure label="Played" value={stats.contestsPlayed} />
+        <Figure label="Win rate" value={`${stats.winPercentage}%`} />
+        <Figure label="Best streak" value={stats.bestStreak} />
+      </dl>
+
+      <dl className="figures">
+        <Figure label="Put in" value={money(stats.amountInvested)} />
+        <Figure label="Won back" value={money(stats.amountWon)} />
+        <Figure label="Biggest win" value={signedMoney(stats.biggestWin)} tone={sign(stats.biggestWin)} />
+      </dl>
+
+      <KindBlock
+        title="Leagues"
+        kind={stats.leagues}
+        note={
+          stats.leaguesPlayed > 0
+            ? `In ${stats.leaguesPlayed} league${stats.leaguesPlayed === 1 ? '' : 's'}. Paid up front and settled when each league ends.`
+            : undefined
+        }
+        empty="No league matches in this period."
+      />
+      <KindBlock
+        title="One-off contests"
+        kind={stats.oneOff}
+        note="Each one settles as soon as its result is in."
+        empty="No one-off contests in this period."
+      />
+
       {stats.months.length > 1 && (
-        <div className="table-wrap">
+        <div className="table-wrap keep-table">
           <table>
             <thead>
               <tr>
                 <th>Month</th>
                 <th className="num">Played</th>
                 <th className="num">Won</th>
-                <th className="num">Put in</th>
+                <th className="num hide-phone">Put in</th>
                 <th className="num">Profit / loss</th>
               </tr>
             </thead>
@@ -123,7 +185,7 @@ function StatsBody({ stats }: { stats: PeriodStats }) {
                   <td>{monthName(m.month)}</td>
                   <td className="num">{m.played}</td>
                   <td className="num">{m.won}</td>
-                  <td className="num">{money(m.invested)}</td>
+                  <td className="num hide-phone">{money(m.invested)}</td>
                   <td className={`num tone-${sign(m.netPl)}`}>{signedMoney(m.netPl)}</td>
                 </tr>
               ))}
@@ -133,7 +195,82 @@ function StatsBody({ stats }: { stats: PeriodStats }) {
       )}
 
       {stats.from && <p className="muted small" style={{ margin: 0 }}>Since {onDate(stats.from)}.</p>}
-    </>
+    </div>
+  );
+}
+
+/** One kind of game on its own: its profit or loss as the heading, then how it went. */
+function KindBlock({
+  title,
+  kind,
+  note,
+  empty,
+}: {
+  title: string;
+  kind: StatsBreakdown;
+  note?: string;
+  empty: string;
+}) {
+  const nothing = kind.played === 0 && kind.pending === 0 && kind.refunded === 0;
+  return (
+    <section className="kind">
+      <div className="kind-head">
+        <h3>{title}</h3>
+        {!nothing && <strong className={`tone-${sign(kind.netPl)}`}>{signedMoney(kind.netPl)}</strong>}
+      </div>
+      {nothing ? (
+        <p className="muted small" style={{ margin: 0 }}>
+          {empty}
+        </p>
+      ) : (
+        <>
+          <dl className="figures figures-tight">
+            <Figure label="Played" value={kind.played} />
+            <Figure label="Won" value={kind.won} hint={kind.played > 0 ? `${kind.winPercentage}%` : undefined} />
+            <Figure label="Lost" value={kind.lost} />
+          </dl>
+          {kind.played > 0 && (
+            <p className="kind-money small">
+              <span>
+                Put in <strong>{money(kind.invested)}</strong>
+              </span>
+              <span>
+                Won back <strong>{money(kind.amountWon)}</strong>
+              </span>
+            </p>
+          )}
+          <p className="muted small" style={{ margin: 0 }}>
+            {[
+              kind.pending > 0 ? `${kind.pending} waiting for a result` : null,
+              kind.refunded > 0 ? `${kind.refunded} refunded` : null,
+              note ?? null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
+function Figure({
+  label,
+  value,
+  hint,
+  tone,
+}: {
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+  tone?: 'up' | 'down' | 'flat';
+}) {
+  return (
+    <div className="figure">
+      <dt>{label}</dt>
+      <dd className={tone ? `tone-${tone}` : undefined}>{value}</dd>
+      {hint && <dd className="figure-hint">{hint}</dd>}
+    </div>
   );
 }
 

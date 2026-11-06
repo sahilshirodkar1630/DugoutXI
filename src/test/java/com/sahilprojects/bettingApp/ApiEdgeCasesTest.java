@@ -40,6 +40,15 @@ class ApiEdgeCasesTest extends AbstractIntegrationTest {
     @Autowired JdbcTemplate jdbc;
     @Autowired ContestStartJob startJob;
 
+    // ---------- the health check, for the host and the keep-awake ping ----------
+
+    @Test
+    void theHealthCheckAnswersWithoutSigningIn() throws Exception {
+        mvc.perform(get("/api/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+
     // ---------- the API reference is off unless switched on ----------
 
     @Test
