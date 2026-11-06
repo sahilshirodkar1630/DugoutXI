@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**310 backend tests across 30 classes, 67 frontend tests across 11 files.**
+**310 backend tests across 30 classes, 70 frontend tests across 12 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -577,6 +577,14 @@ The first admins come from server configuration (app.admin-emails), never from a
 `src/lib/tableLabels.test.ts`
 
 - Copies each heading onto its cells, leaving a cell that spans columns unlabelled
+
+### AboutPage.test.tsx (3 tests)
+
+`src/pages/AboutPage.test.tsx`
+
+- Offers both editions of the user guide as downloads
+- Says who built it and how to reach him
+- Has a way back to sign in when opened signed out
 
 ### JoinLeaguePage.test.tsx (6 tests)
 

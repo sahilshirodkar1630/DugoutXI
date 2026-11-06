@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { dashboard, users } from '../api/endpoints';
 import type { PeriodStats, StatsBreakdown, StatsRange } from '../api/types';
 import { useAuth } from '../auth/useAuth';
@@ -42,6 +43,17 @@ export function ProfilePage() {
       <RecordsCard />
       <DetailsCard />
       <PasswordCard />
+
+      <Card title="About Dugout XI" subtitle="How it works, the user guide to download, and who to contact.">
+        <div className="row gap">
+          <Link className="btn" to="/about">
+            Open About
+          </Link>
+          <a className="btn btn-quiet" href="/guide/Dugout-XI-User-Guide.pdf" download>
+            Download guide
+          </a>
+        </div>
+      </Card>
 
       <Card title="Account">
         <p className="muted small" style={{ margin: 0 }}>

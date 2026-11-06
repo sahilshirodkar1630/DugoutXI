@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Dugout XI — User guide</title>
+<script>
+  // Open as guide.html#dark for the Dark edition.
+  if (location.hash === '#dark') document.documentElement.classList.add('dark');
+</script>
+<style>
+  /* Inter, exactly as the app bundles it. latin-ext carries the rupee sign. */
+  @font-face { font-family: 'Inter Variable'; src: url('inter-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900;
+    unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family: 'Inter Variable'; src: url('inter-latin-ext-wght-normal.woff2') format('woff2'); font-weight: 100 900;
+    unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+
+  /* The app's own colour tokens (frontend/src/index.css): Day, then Dark. */
+  :root {
+    --bg: #f3f5f8; --surface: #ffffff; --surface-2: #eef1f5; --border: #e1e5eb; --text: #14181f; --text-muted: #5c6673;
+    --accent: #1f6feb; --accent-contrast: #ffffff; --bail: #d99a00;
+    --good: #12794a; --good-bg: #e2f5ea; --bad: #b4231f; --bad-bg: #fdeae9; --warn: #8a5a00; --warn-bg: #fdf2dc;
+    --info: #0f5c8c; --info-bg: #e3f0f9;
+    --shadow: 0 1px 2px rgb(16 24 40 / 5%), 0 2px 6px rgb(16 24 40 / 6%);
+  }
+  html.dark {
+    --bg: #0d1117; --surface: #161b22; --surface-2: #1c2230; --border: #2b3240; --text: #e6edf3; --text-muted: #9aa5b1;
+    --accent: #4b8bf4; --accent-contrast: #0d1117; --bail: #ffc857;
+    --good: #4ddc92; --good-bg: #10301f; --bad: #ff8781; --bad-bg: #3a1614; --warn: #ffc857; --warn-bg: #3a2c0c;
+    --info: #7cc4f2; --info-bg: #10293a; --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  }
+
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { margin: 0; background: var(--bg); }
+  body { font-family: 'Inter Variable', system-ui, sans-serif; font-feature-settings: 'cv05', 'cv11'; color: var(--text); font-size: 9.6pt; line-height: 1.45; }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.015em; line-height: 1.2; }
+  p { margin: 0 0 5pt; }
+  ul { margin: 0 0 6pt; padding-left: 14pt; }
+  li { margin-bottom: 2.5pt; }
+  strong { font-weight: 650; }
+  .muted { color: var(--text-muted); }
+  .small { font-size: 8.4pt; }
+
+  /* One A4 sheet per section, laid out like an app screen. */
+  .page { width: 210mm; height: 297mm; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 14mm; height: 15mm; display: flex; align-items: center; justify-content: space-between; flex: none; }
+  .brand { display: inline-flex; align-items: center; gap: 7pt; font-weight: 700; font-size: 11.5pt; }
+  .crumb { color: var(--text-muted); font-size: 8.6pt; font-weight: 600; }
+  .content { flex: 1; padding: 8mm 14mm 0; display: flex; flex-direction: column; gap: 9pt; }
+  .foot { flex: none; height: 11mm; padding: 0 14mm; display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); font-size: 7.8pt; border-top: 1px solid var(--border); background: var(--surface); }
+  .page-title { display: flex; flex-direction: column; gap: 2pt; }
+  .page-title h1 { font-size: 19pt; font-weight: 700; }
+  .page-title .sub { color: var(--text-muted); font-size: 9.6pt; }
+
+  /* App components. */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10pt; box-shadow: var(--shadow); padding: 11pt 13pt; break-inside: avoid; }
+  .card > h2 { font-size: 11.5pt; margin-bottom: 2pt; }
+  .card > .sub { color: var(--text-muted); font-size: 8.6pt; margin-bottom: 7pt; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9pt; }
+  .with-shot { display: grid; grid-template-columns: 1fr 47mm; gap: 11pt; align-items: start; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6pt; margin: 4pt 0 2pt; }
+  .stat { background: var(--surface-2); border-radius: 6pt; padding: 6pt 8pt; }
+  .stat .l { font-size: 7.2pt; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+  .stat .v { font-size: 12pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .h { font-size: 7.6pt; color: var(--text-muted); }
+  .up { color: var(--good); } .down { color: var(--bad); }
+
+  .ui { display: inline-block; font-weight: 600; font-size: 8.4pt; line-height: 1.3; padding: 0.5pt 6pt; border-radius: 5pt; border: 1px solid var(--border); background: var(--surface); white-space: nowrap; }
+  .ui.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+  .tab { font-weight: 600; border-bottom: 2px solid var(--accent); padding: 0 2pt; white-space: nowrap; }
+  .badge { display: inline-block; padding: 0 6pt; border-radius: 999px; font-size: 7.6pt; font-weight: 600; white-space: nowrap; }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+
+  .note { border-radius: 6pt; padding: 7pt 10pt; font-size: 9pt; break-inside: avoid; }
+  .note b.t { display: block; margin-bottom: 1pt; }
+  .note.info { background: var(--info-bg); color: var(--info); }
+  .note.good { background: var(--good-bg); color: var(--good); }
+  .note.warn { background: var(--warn-bg); color: var(--warn); }
+  .note.plain { background: var(--surface-2); }
+
+  ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; }
+  ol.steps > li { counter-increment: s; position: relative; padding-left: 21pt; margin-bottom: 5pt; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0.5pt; width: 14pt; height: 14pt; border-radius: 50%;
+    background: var(--accent); color: var(--accent-contrast); font-size: 7.8pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  th { text-align: left; font-size: 7.2pt; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); padding: 3pt 6pt; border-bottom: 1px solid var(--border); }
+  td { padding: 5pt 6pt; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+
+  .phone { width: 47mm; border-radius: 12pt; border: 1px solid var(--border); box-shadow: var(--shadow); display: block; }
+  .cap { font-size: 7.6pt; color: var(--text-muted); text-align: center; margin-top: 3pt; }
+  .dark-only { display: none; }
+  html.dark .day-only { display: none; } html.dark .dark-only { display: block; }
+
+  /* Cover */
+  .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 14pt; box-shadow: var(--shadow); padding: 16pt 18pt; display: grid; grid-template-columns: 1fr 52mm; gap: 14pt; align-items: center; }
+  .hero h1 { font-size: 30pt; font-weight: 750; letter-spacing: -0.03em; }
+  .hero .lead { font-size: 13pt; color: var(--text-muted); margin: 6pt 0 12pt; line-height: 1.35; }
+  .hero .phone { width: 52mm; }
+  .linkbox { background: var(--surface-2); border-radius: 8pt; padding: 8pt 10pt; }
+  .linkbox .url { color: var(--accent); font-weight: 700; font-size: 11pt; }
+  .toc { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14pt; }
+  .toc div { display: flex; gap: 8pt; padding: 5pt 0; border-bottom: 1px solid var(--border); }
+  .toc span { color: var(--accent); font-weight: 700; min-width: 12pt; }
+  .qa h3 { font-size: 10pt; margin: 0 0 1pt; }
+  .qa > div { padding: 6pt 0; border-bottom: 1px solid var(--border); break-inside: avoid; }
+  .qa > div:last-child { border-bottom: 0; }
+</style>
+</head>
+<body>
+
+<!-- The wickets mark, used in every top bar. -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="mark" viewBox="0 0 24 24">
+    <rect x="5" y="7" width="3" height="15" rx="1.2" fill="var(--accent)"/><rect x="10.5" y="7" width="3" height="15" rx="1.2" fill="var(--accent)"/>
+    <rect x="16" y="7" width="3" height="15" rx="1.2" fill="var(--accent)"/><rect x="4" y="3.5" width="7.5" height="2" rx="1" fill="var(--bail)"/>
+    <rect x="12.5" y="3.5" width="7.5" height="2" rx="1" fill="var(--bail)"/>
+  </symbol>
+</svg>
+
+<!-- ================= COVER ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">User guide</span></div>
+  <div class="content" style="gap:12pt; padding-top:12mm">
+    <div class="hero">
+      <div>
+        <svg width="44" height="44"><use href="#mark"/></svg>
+        <h1>Dugout XI</h1>
+        <p class="lead">Pick the winner of every match with your friends. The app keeps the score and the money straight.</p>
+        <div class="linkbox">
+          <div class="small muted">Open it on your phone or computer</div>
+          <div class="url">dugout-xi-gamma.vercel.app</div>
+          <div class="small muted" style="margin-top:3pt">Tip: in Chrome or Safari, choose <strong>Add to Home screen</strong> so it opens like an app.</div>
+        </div>
+      </div>
+      <div>
+        <img class="phone day-only" src="profile.jpg" alt="" /><img class="phone dark-only" src="profile-dark.jpg" alt="" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>In this guide</h2>
+      <div class="sub">For players first, then for organizers.</div>
+      <div class="toc">
+        <div><span>1</span>Getting started</div><div><span>6</span>Results, winnings and refunds</div>
+        <div><span>2</span>Getting around</div><div><span>7</span>Your profile, record and Excel copy</div>
+        <div><span>3</span>How a league works</div><div><span>8</span>Organizers: running a league</div>
+        <div><span>4</span>Joining and playing a league</div><div><span>9</span>Organizers: one-off contests</div>
+        <div><span>5</span>One-off contests</div><div><span>10</span>Questions and answers</div>
+      </div>
+    </div>
+
+    <div class="note good"><b class="t">No money moves through the app.</b>You pay the organizer directly (UPI, cash, whatever your group uses), and the organizer pays winnings back the same way. Dugout XI records who paid, who picked what, who won, and who is owed what.</div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>1</span></div>
+</section>
+
+<!-- ================= 1-2 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">1 – 2 · Getting started</span></div>
+  <div class="content">
+    <div class="page-title"><h1>Getting started</h1><span class="sub">An account takes a minute. Invite links bring you straight back to the league or contest.</span></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>Create your account</h2>
+        <div class="sub">From the app link, or an invite a friend sent you.</div>
+        <ol class="steps">
+          <li>Open the link and tap <span class="ui">Create one</span> (from an invite, the form opens on its own).</li>
+          <li>Enter your <strong>name</strong>, a <strong>display name</strong> (what friends see on the table), your <strong>email</strong> and a <strong>password</strong> of 8+ characters.</li>
+          <li>Tap <span class="ui primary">Create account</span>. You are signed in at once.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h2>Forgot your password?</h2>
+        <div class="sub">There is no email from the app, so the admins help.</div>
+        <ol class="steps">
+          <li>On sign-in tap <span class="ui">Forgot password?</span>, enter your email, tap <span class="ui">Ask for a reset</span>.</li>
+          <li>An admin sends you a <strong>temporary password</strong> (usually on WhatsApp).</li>
+          <li>Sign in with it; the app asks you to <strong>choose your own</strong> first.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="page-title" style="margin-top:4pt"><h1>Getting around</h1><span class="sub">On a phone these are the tabs along the bottom of the screen.</span></div>
+    <div class="card" style="padding-top:6pt">
+      <table>
+        <tr><th style="width:30%">Where</th><th>What it is for</th></tr>
+        <tr><td>Home</td><td>Your record at a glance, money coming back to you, and anything waiting on you: a pick to make, a payment due.</td></tr>
+        <tr><td>Leagues</td><td>Your leagues, <span class="ui">Start a league</span>, and opening one with an invite code.</td></tr>
+        <tr><td>Contests</td><td>Your one-off contests, <span class="ui">Create a contest</span>, and opening one by its number.</td></tr>
+        <tr><td>Alerts</td><td>Join decisions, payment and pick reminders, results, settle-up. A red badge counts the unread ones.</td></tr>
+        <tr><td>Your name (top right)</td><td>Your profile: record, details, password, Excel copy, sign out.</td></tr>
+        <tr><td>Moon / sun (top right)</td><td>Switch between <strong>Day</strong> and <strong>Dark</strong>. Your choice is remembered; until then the app follows your phone.</td></tr>
+      </table>
+    </div>
+
+    <div class="note info"><b class="t">Changing your password</b>Profile → <span class="ui">Change password</span>. Every other phone or computer you were signed in on is signed out.</div>
+    <div class="note warn"><b class="t">The first visit can be slow</b>After a quiet spell the server takes up to a minute to wake. If you see "Could not reach the server", wait a moment and refresh.</div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>2</span></div>
+</section>
+
+<!-- ================= 3-4 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">3 – 4 · Leagues</span></div>
+  <div class="content">
+    <div class="page-title"><h1>How a league works</h1><span class="sub">A season-long competition among friends, for a tournament such as IPL 2026.</span></div>
+    <div class="card">
+      <h2>The deal</h2>
+      <div class="sub">Set by the organizer when the league is created.</div>
+      <div class="stats">
+        <div class="stat"><div class="l">Per match</div><div class="v">₹100</div><div class="h">entry for each match</div></div>
+        <div class="stat"><div class="l">Matches</div><div class="v">20</div><div class="h">in the season</div></div>
+        <div class="stat"><div class="l">Buy-in</div><div class="v">₹2,000</div><div class="h">paid up front</div></div>
+        <div class="stat"><div class="l">At the end</div><div class="v">Balance</div><div class="h">handed back to you</div></div>
+      </div>
+      <ul style="margin-top:6pt">
+        <li><strong>You are in every match automatically</strong> once your place is confirmed. You only make your pick.</li>
+        <li><strong>Each match is a small pot.</strong> Everyone's ₹100 goes in; those who picked the winner share it.</li>
+        <li><strong>The table</strong> ranks everyone by net profit: what you've won minus what your entries cost so far.</li>
+        <li><strong>At the end</strong> the organizer hands you back your final balance = buy-in + net profit. Nobody pays more than the buy-in.</li>
+      </ul>
+      <div class="note good" style="margin-top:4pt"><b class="t">Example</b>You win ₹2,600 over the season and your entries cost ₹2,000: net profit <span style="white-space:nowrap">+₹600</span>, so you get back <strong>₹2,600</strong>. Someone at <span style="white-space:nowrap">−₹500</span> gets back ₹1,500.</div>
+    </div>
+
+    <div class="page-title" style="margin-top:2pt"><h1>Joining and playing</h1></div>
+    <div class="card">
+      <div class="with-shot">
+        <div>
+          <ol class="steps">
+            <li><strong>Open the invite</strong>: the link, or Leagues → enter the <strong>invite code</strong>. You see the price and deadlines.</li>
+            <li>Tap <span class="ui primary">Ask to join</span> before "Joining closes". The organizer is told.</li>
+            <li><strong>Pay the buy-in</strong> as the league's "How to pay" says, before <strong>Payment due</strong>. Unpaid places are released automatically.</li>
+            <li>The organizer marks <span class="ui">Payment received</span>; you get an alert and you're <span class="badge good">Confirmed</span>.</li>
+            <li><strong>Pick</strong>: open a match (league → <span class="tab">Contests</span>) and tap the team you think will win. Change it any time until the start; then picks lock.</li>
+            <li>Follow the <span class="tab">Table</span>, and <span class="ui">Share on WhatsApp</span> to your group.</li>
+          </ol>
+          <div class="note plain small" style="margin-top:4pt"><strong>Good to know:</strong> other players' picks stay hidden until the match starts. No pick still counts as an entry, and can't win. Nobody joins once the first match has started.</div>
+        </div>
+        <div>
+          <img class="phone day-only" src="match.jpg" alt="" /><img class="phone dark-only" src="match-dark.jpg" alt="" />
+          <div class="cap">Your pick shows in green.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>3</span></div>
+</section>
+
+<!-- ================= 5-6 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">5 – 6 · Contests and results</span></div>
+  <div class="content">
+    <div class="page-title"><h1>One-off contests</h1><span class="sub">A single match with its own entry fee, outside any league. It settles as soon as the result is in.</span></div>
+    <div class="card">
+      <ol class="steps">
+        <li><strong>Open it</strong> from the link a friend shared, or Contests → enter its <strong>number</strong> (for example #9) → <span class="ui">Open contest</span>.</li>
+        <li>Tap <span class="ui primary">Ask to join</span> before "Joining closes". You can <span class="ui">Withdraw my request</span> while it waits.</li>
+        <li>Once accepted, <strong>pay the entry</strong> before "Payment due", or your place is released.</li>
+        <li><strong>Pick the winner</strong> before the match starts.</li>
+        <li>After the result, the <span class="tab">Money</span> tab shows who is owed what. The organizer pays out and marks each one <span class="badge good">Paid out</span>.</li>
+      </ol>
+      <p class="muted small" style="margin:2pt 0 0">A contest with fewer than 2 confirmed players at its start is cancelled, and anyone who paid is refunded.</p>
+    </div>
+
+    <div class="page-title" style="margin-top:2pt"><h1>Results, winnings and refunds</h1><span class="sub">The same rules for every match, in leagues and one-off contests alike.</span></div>
+    <div class="card">
+      <div class="stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom:8pt">
+        <div class="stat"><div class="l">The pot</div><div class="v">₹600</div><div class="h">6 players × ₹100</div></div>
+        <div class="stat"><div class="l">Winners</div><div class="v">2</div><div class="h">picked the winning team</div></div>
+        <div class="stat"><div class="l">Each winner</div><div class="v up">₹300</div><div class="h">profit +₹200; the other 4 lose ₹100</div></div>
+      </div>
+      <table>
+        <tr><th style="width:30%">Rule</th><th>What it means</th></tr>
+        <tr><td>Winners share equally</td><td>Everyone who picked the winning team gets an equal share of the pot.</td></tr>
+        <tr><td>Odd paise</td><td>If a pot doesn't divide exactly, the few paise left are recorded, not handed to anyone at random.</td></tr>
+        <tr><td>Everyone refunded</td><td>When the match has <strong>no result</strong>, <strong>nobody</strong> picked the winner, or <strong>everybody</strong> did. Nothing is won or lost.</td></tr>
+        <tr><td>No pick</td><td>Your entry is in the pot, and you can't win that match.</td></tr>
+      </table>
+    </div>
+    <div class="note info"><b class="t">Corrections</b>If an organizer entered a wrong result, they can correct it (with a written reason, kept on record) until money has been paid out. Figures update everywhere.</div>
+    <div class="note plain"><b class="t">Share it</b>Results, league tables and invites all have <span class="ui">Share on WhatsApp</span>: WhatsApp opens with the message ready and you pick the group.</div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>4</span></div>
+</section>
+
+<!-- ================= 7 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">7 · Your profile</span></div>
+  <div class="content">
+    <div class="page-title"><h1>Your profile, record and Excel copy</h1><span class="sub">Tap your name at the top right.</span></div>
+    <div class="card">
+      <div class="with-shot">
+        <div>
+          <h2 style="font-size:11.5pt;margin-bottom:4pt">Your record</h2>
+          <p>Choose a period: <span class="ui">1M</span> <span class="ui">3M</span> <span class="ui">6M</span> <span class="ui">1Y</span> <span class="ui primary">All</span></p>
+          <ul>
+            <li><strong>Profit / loss</strong> for the period, and your return on the money you put in.</li>
+            <li>A bar of <span class="up"><strong>won</strong></span> and <span class="down"><strong>lost</strong></span> matches, and your current run.</li>
+            <li><strong>Played, win rate, best streak</strong> · <strong>put in, won back, biggest win</strong>.</li>
+            <li><strong>Leagues</strong> and <strong>one-off contests</strong> in separate blocks, each with its own profit or loss.</li>
+            <li>A month-by-month table.</li>
+          </ul>
+          <h2 style="font-size:11.5pt;margin:8pt 0 4pt">Keep your own copy</h2>
+          <p><span class="ui">Download Excel</span> on your profile: every contest you played, your picks, results, payouts and league balances, in one spreadsheet.</p>
+          <p>Each league has its own <span class="ui">Download Excel</span> too (top of the league page): the table, every match, every pick and the settle-up. Download one now and then; it is your record whatever happens.</p>
+          <h2 style="font-size:11.5pt;margin:8pt 0 4pt">Your details</h2>
+          <p>Name, display name, phone and <strong>UPI id</strong>. Add your UPI id so organizers know where to send winnings: only the organizer of a league or contest you're in can see it.</p>
+        </div>
+        <div>
+          <img class="phone day-only" src="record.jpg" alt="" /><img class="phone dark-only" src="board-dark.jpg" alt="" />
+          <div class="cap day-only">Leagues and one-offs, separately.</div><div class="cap dark-only">A league's table and standing.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding-top:8pt">
+      <h2>Alerts you'll get</h2>
+      <div class="sub">In the app, under <span class="tab">Alerts</span>. There are no emails or phone notifications, so check before each match.</div>
+      <table>
+        <tr><th style="width:32%">When</th><th>What you see</th></tr>
+        <tr><td>Joining</td><td>The organizer accepted or declined you · a payment reminder before the deadline · your place was released because it went unpaid.</td></tr>
+        <tr><td>Before a match</td><td>A reminder that it starts soon · a reminder if you haven't picked · picks are locked · the start time moved · the match was cancelled.</td></tr>
+        <tr><td>After a match</td><td>The result is in · a result was corrected.</td></tr>
+        <tr><td>End of a league</td><td>The league has ended and your balance to be handed back · your settle-up was updated.</td></tr>
+        <tr><td>Organizers</td><td>Someone asked to join your league or contest.</td></tr>
+      </table>
+    </div>
+    <div class="note info"><b class="t">Day or Dark</b>The moon / sun button in the top bar switches the whole app. Every screen in this guide works the same in both.</div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>5</span></div>
+</section>
+
+<!-- ================= 8-9 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">8 – 9 · For organizers</span></div>
+  <div class="content">
+    <div class="page-title"><h1>Running a league</h1><span class="sub">Anyone can. Whoever creates a league is its organizer, and plays in it too (your own buy-in counts as paid).</span></div>
+    <div class="card">
+      <ol class="steps">
+        <li><strong>Create it.</strong> Leagues → <span class="ui primary">Start a league</span>: name, tournament, amount per match, number of matches, joining and payment dates, and <strong>how to pay</strong> ("UPI to name@okbank").</li>
+        <li><strong>Open it.</strong> <span class="ui primary">Open for joining</span>, or it opens on its own at the "joining opens" time.</li>
+        <li><strong>Invite people</strong> from the league page: <strong>invite code</strong>, <span class="ui">Copy invite link</span> or <span class="ui primary">Share on WhatsApp</span>.</li>
+        <li><strong>Let people in</strong> (<span class="tab">Players</span>): <span class="ui">Accept</span>, or <span class="ui">Accept as paid</span> if you have their money; otherwise <span class="ui">Payment received</span> when it arrives. You can <span class="ui">Decline</span> or <span class="ui">Remove</span>.</li>
+        <li><strong>Add matches</strong> (<span class="tab">Contests</span> → <span class="ui primary">Add a contest</span>): two teams and a start time after the payment deadline. Every confirmed player is entered.</li>
+        <li><strong>Enter each result</strong>: match → <span class="tab">Result</span> → winner (or no result) → <span class="ui">Work out the payouts</span> shows who wins what → <span class="ui primary">Confirm this result</span>.</li>
+        <li><strong>End the season</strong> with <span class="ui primary">End the league</span>: every balance is frozen.</li>
+        <li><strong>Settle up</strong> (<span class="tab">Settle up</span>): hand each player back the amount <strong>To hand back</strong>, tap <span class="ui">Mark settled</span>, then <span class="ui primary">Close the league</span>.</li>
+      </ol>
+    </div>
+    <div class="note warn"><b class="t">Tips</b>Add matches a few days ahead so players get pick reminders. Use <span class="ui">Reschedule</span> on a match if its start moves (everyone is told). Download the league's Excel after each week.</div>
+
+    <div class="page-title" style="margin-top:2pt"><h1>One-off contests</h1></div>
+    <div class="card">
+      <ol class="steps">
+        <li>Contests → <span class="ui primary">Create a contest</span>: tournament, teams, start time, entry, joining and payment deadlines, how to pay.</li>
+        <li>Share it from the <strong>Invite players</strong> box: <span class="ui primary">Share on WhatsApp</span>, <span class="ui">Copy invite link</span> or the contest number.</li>
+        <li><span class="tab">Players</span>: <span class="ui">Accept</span> requests and tap <span class="ui">Payment received</span> as money arrives.</li>
+        <li>After the match: <span class="ui">Work out the payouts</span> → <span class="ui primary">Confirm this result</span>. Then <span class="tab">Money</span>: send each winning or refund and tap <span class="ui">Mark as paid</span>.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="foot"><span>Dugout XI · user guide</span><span>6</span></div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section class="page">
+  <div class="topbar"><span class="brand"><svg width="20" height="20"><use href="#mark"/></svg>Dugout XI</span><span class="crumb">10 · Questions and answers</span></div>
+  <div class="content">
+    <div class="page-title"><h1>Questions and answers</h1></div>
+    <div class="card qa">
+      <div><h3>Does the app take or hold my money?</h3><p class="muted">No. All money goes directly between you and the organizer. The app only records it.</p></div>
+      <div><h3>I missed the joining or payment deadline.</h3><p class="muted">Ask the organizer: they can change the dates until the league starts. Once the first match has started nobody can join, because there's no fair way to price the matches already played.</p></div>
+      <div><h3>Can I change my pick?</h3><p class="muted">Yes, as often as you like until the match starts. Then picks lock for everyone.</p></div>
+      <div><h3>The match was washed out.</h3><p class="muted">The organizer enters "no result" and everyone is refunded for that match.</p></div>
+      <div><h3>Why is my balance different from my profit?</h3><p class="muted">Profit counts only matches; your balance also includes the buy-in you paid. Balance = buy-in + profit, and that's what you get back at the end.</p></div>
+      <div><h3>Who can see my phone number and UPI id?</h3><p class="muted">Only you, and the organizer of a league or contest you're in.</p></div>
+      <div><h3>I didn't get an alert.</h3><p class="muted">Alerts appear inside the app (the bell, with a red badge). There are no emails or phone notifications, so open the app before each match.</p></div>
+      <div><h3>The page says "Could not reach the server".</h3><p class="muted">The server may be waking after a quiet spell. Wait up to a minute and refresh.</p></div>
+      <div><h3>Who are the admins?</h3><p class="muted">They look after accounts, tournaments and teams, and reset forgotten passwords. They can step in for an organizer only with a written reason, which is kept on record.</p></div>
+    </div>
+    <div class="note good"><b class="t">Have fun, and pick wisely.</b>Questions about a league or contest? Ask its organizer. Can't sign in? Use <span class="ui">Forgot password?</span> on the sign-in page.</div>
+  </div>
+  <div class="foot"><span>Dugout XI · dugout-xi-gamma.vercel.app</span><span>7</span></div>
+</section>
+</body>
+</html>

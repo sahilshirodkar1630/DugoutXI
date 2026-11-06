@@ -1294,3 +1294,119 @@ tr.is-me {
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- About ---------- */
+
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-standalone {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+}
+
+.about-back {
+  font-size: 0.9rem;
+}
+
+.about-hero {
+  gap: 8px;
+}
+
+.about-hero h1 {
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+}
+
+.about-lead {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.note-good {
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.about-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.about-steps,
+.about-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ui-chip {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  padding: 1px 7px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  white-space: nowrap;
+}
+
+.ui-chip-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.about-faq details {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+}
+
+.about-faq details:last-child {
+  border-bottom: 0;
+}
+
+.about-faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.about-faq details p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+}
+
+.about-contact {
+  border-color: var(--accent);
+}
+
+.about-contact h2 {
+  font-size: 1.15rem;
+}
+
+.about-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.about-foot {
+  text-align: center;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .about-contact-links .btn {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

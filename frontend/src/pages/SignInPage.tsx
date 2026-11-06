@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { auth } from '../api/endpoints';
 import { useAuth } from '../auth/useAuth';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -113,6 +113,10 @@ export function SignInPage() {
         </p>
 
         {mode === 'sign-in' && <ForgotPassword email={form.email} />}
+
+        <p className="muted small" style={{ margin: 0 }}>
+          New here? <Link to="/about">What is Dugout XI?</Link>
+        </p>
       </Card>
     </div>
   );

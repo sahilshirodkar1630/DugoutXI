@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useSearchParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ChangePasswordForm } from './components/ChangePasswordForm';
 import { Card, Spinner } from './components/ui';
 import { consumeSignedOut } from './auth/authState';
 import { useAuth } from './auth/useAuth';
+import { AboutPage } from './pages/AboutPage';
 import { AdminPage } from './pages/AdminPage';
 import { ContestPage } from './pages/ContestPage';
 import { ContestsPage } from './pages/ContestsPage';
@@ -29,7 +30,10 @@ export default function App() {
   if (loading) {
     return (
       <div className="auth-shell">
-        <Spinner label="Signing you in" />
+        <div className="col" style={{ alignItems: 'center', maxWidth: 360, textAlign: 'center' }}>
+          <Spinner label="Signing you in" />
+          <WakingHint />
+        </div>
       </div>
     );
   }
@@ -38,6 +42,7 @@ export default function App() {
     return (
       <Routes>
         <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/about" element={<AboutPage standalone />} />
         <Route path="*" element={<ToSignIn />} />
       </Routes>
     );
@@ -60,6 +65,7 @@ export default function App() {
         <Route path="/contests/:contestId" element={<ContestPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/admin" element={user.role === 'ADMIN' ? <AdminPage /> : <Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
@@ -100,4 +106,19 @@ function BackFromSignIn() {
   const next = params.get('next');
   const safe = next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
   return <Navigate to={safe} replace />;
+}
+
+/** Shown when signing in takes more than a few seconds, which almost always means the server is waking up. */
+function WakingHint() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShow(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, []);
+  if (!show) return null;
+  return (
+    <p className="muted small" style={{ margin: 0 }}>
+      Waking the server… After a quiet spell this can take up to a minute. Keep this page open.
+    </p>
+  );
 }

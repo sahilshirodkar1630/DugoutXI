@@ -6,7 +6,7 @@ React 19, TypeScript and Vite. Talks to the Spring Boot backend in the folder ab
 npm install
 npm run dev        # http://localhost:5173
 npm run share      # the same, reachable from phones on your Wi-Fi; the API goes through it at /api (API_TARGET, default 8080)
-npm test           # 67 tests
+npm test           # 70 tests
 npm run typecheck  # tsc, no emit
 npm run build      # production bundle into dist/
 ```
@@ -52,6 +52,7 @@ actual protection.
 | --- | --- |
 | `/sign-in` | Sign in or register; registering signs you straight in |
 | `/` | Your record, money coming back to you, and what is waiting on you |
+| `/about` | What the app is, how to play, the rules, the user guide PDFs to download, and who to contact. Open to everyone |
 | `/join/:code` | An invite link: what the league costs, and a button to ask for a place. Works signed out too: sign-in brings you back here |
 | `/leagues` | Your leagues; start one, or open one with an invite code |
 | `/leagues/:id` | One league: the table, its contests, its players, and settling up |

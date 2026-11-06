@@ -70,6 +70,7 @@ export function Layout() {
             <NavLink to="/leagues">Leagues</NavLink>
             <NavLink to="/contests">Contests</NavLink>
             {user?.role === 'ADMIN' && <NavLink to="/admin">Admin</NavLink>}
+            <NavLink to="/about">About</NavLink>
           </nav>
           <div className="row gap topbar-end">
             <ThemeToggle />
