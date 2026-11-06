@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { auth } from '../api/endpoints';
 import { useAuth } from '../auth/useAuth';
+import { BrandMark } from '../components/BrandMark';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { Card, ErrorNote, Field, InfoNote } from '../components/ui';
 import { useAction } from '../hooks/useLoad';
@@ -47,10 +48,14 @@ export function SignInPage() {
       <div className="auth-corner">
         <ThemeToggle />
       </div>
+      <div className="auth-brand">
+        <BrandMark size={44} />
+        <span>Dugout XI</span>
+      </div>
       <Card
         className="auth-card"
         title={mode === 'sign-in' ? 'Sign in' : 'Create an account'}
-        subtitle="Dugout XI: pick the winner of every match with your friends. Money is settled between you, outside the app."
+        subtitle="Pick the winner of every match with your friends. Money is settled between you, outside the app."
       >
         {invite && (
           <InfoNote>

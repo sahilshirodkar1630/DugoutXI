@@ -723,9 +723,21 @@ tr.is-me {
 .auth-shell {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 18px;
   padding: 16px;
+}
+
+/* The name and mark above the sign-in card. */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.9rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
 }
 
 .auth-card {
@@ -1040,8 +1052,8 @@ tr.is-me {
   }
 
   .auth-shell {
-    align-items: flex-start;
-    padding-top: 10vh;
+    justify-content: flex-start;
+    padding-top: 9vh;
   }
 }
 
