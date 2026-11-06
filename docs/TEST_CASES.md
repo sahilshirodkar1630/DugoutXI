@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**309 backend tests across 30 classes, 67 frontend tests across 11 files.**
+**303 backend tests across 29 classes, 62 frontend tests across 10 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -192,19 +192,6 @@ Joining somebody else's standalone contest, and the organizer's side of it.
 - A Place Cannot Be Reversed Once The Contest Has Started
 - The Organizers Own Place Cannot Be Touched
 - The Organizer Is Told When Someone Asks To Join
-
-### FixtureImportTest (integration, 6 tests)
-
-`contest/FixtureImportTest.java`
-
-Importing a league's fixture list in one go: checked row by row, and all or nothing.
-
-- A Dry Run Checks Every Row And Creates Nothing
-- A Clean List Creates Every Match With Numbers In Order
-- One Bad Row Means Nothing Is Created
-- The List Cannot Go Past The Leagues Planned Matches
-- Only The Organizer Can Import
-- An Empty List Is Refused
 
 ### PredictionFlowTest (integration, 8 tests)
 
@@ -545,16 +532,6 @@ The first admins come from server configuration (app.admin-emails), never from a
 
 - Does not send two new passwords that differ
 - Swaps in the new token the backend returns
-
-### fixtures.test.ts (5 tests)
-
-`src/lib/fixtures.test.ts`
-
-- Splits CSV, keeping quoted commas and doubled quotes
-- Reads the template, with Indian day-first dates and 12-hour times
-- Finds columns by heading in any order
-- Names the line of every row it cannot read, and keeps the rest
-- Says which headings are missing
 
 ### format.test.ts (10 tests)
 

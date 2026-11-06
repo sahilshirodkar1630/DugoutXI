@@ -41,8 +41,8 @@ ipl-league/
 │   ├── jobs/                    The scheduled half: locking, cutoffs, reminders
 │   ├── audit/                   The append-only audit log
 │   └── common/                  Errors, the clock, shared base entity
-├── src/test/java/               328 tests, including a full-season end-to-end run
-├── frontend/                    React 19 + TypeScript + Vite, 67 tests
+├── src/test/java/               322 tests, including a full-season end-to-end run
+├── frontend/                    React 19 + TypeScript + Vite, 62 tests
 ├── postman/                     251 requests with assertions, in the order a season happens
 └── docs/TEST_CASES.md           Every test, generated from the sources
 ```
@@ -109,8 +109,8 @@ the sign-in page alerts the admins, who send back a temporary password that must
 ## Tests
 
 ```bash
-mvn test                  # 328 backend tests
-cd frontend && npm test   # 67 frontend tests
+mvn test                  # 322 backend tests
+cd frontend && npm test   # 62 frontend tests
 ```
 
 The backend's integration tests need Docker: they start a real PostgreSQL 16 through Testcontainers and run every

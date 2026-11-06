@@ -431,32 +431,6 @@ export interface PeriodStats {
   months: { month: string; played: number; won: number; invested: string; netPl: string }[];
 }
 
-/** One row of a fixture import, as sent (FixtureRow). */
-export interface FixtureRow {
-  teamA: string;
-  teamB: string;
-  startTime: string;
-  name?: string;
-  contestNumber?: number;
-}
-
-/** Mirrors ImportFixturesResponse. */
-export interface FixtureImportResult {
-  ok: boolean;
-  dryRun: boolean;
-  created: number;
-  rows: {
-    row: number;
-    teamA: TeamRef | null;
-    teamB: TeamRef | null;
-    startTime: string;
-    name: string | null;
-    contestNumber: number | null;
-    contestId: number | null;
-    error: string | null;
-  }[];
-}
-
 export interface PendingItem {
   kind: 'PAYOUT' | 'SETTLEMENT' | 'RESULT_DUE' | 'SETTLEMENT_DUE';
   referenceId: number;

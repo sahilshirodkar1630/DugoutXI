@@ -14,11 +14,9 @@ import java.util.List;
 public class ContestController {
 
     private final ContestService service;
-    private final FixtureImportService fixtureImport;
 
-    public ContestController(ContestService service, FixtureImportService fixtureImport) {
+    public ContestController(ContestService service) {
         this.service = service;
-        this.fixtureImport = fixtureImport;
     }
 
     /** League contest (send leagueId) or standalone contest (leave it out). */
@@ -44,14 +42,6 @@ public class ContestController {
     public List<ContestSummaryResponse> leagueContests(@AuthenticationPrincipal AuthenticatedUser actor,
                                                        @PathVariable Long leagueId) {
         return service.listForLeague(actor, leagueId);
-    }
-
-    /** Many league matches at once, all or nothing. Send dryRun to check the list without creating anything. */
-    @PostMapping("/leagues/{leagueId}/contests/import")
-    public ImportFixturesResponse importFixtures(@AuthenticationPrincipal AuthenticatedUser actor,
-                                                 @PathVariable Long leagueId,
-                                                 @Valid @RequestBody ImportFixturesRequest request) {
-        return fixtureImport.importFixtures(actor, leagueId, request);
     }
 
     @PatchMapping("/contests/{id}/start-time")

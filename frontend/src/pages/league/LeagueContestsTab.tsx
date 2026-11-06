@@ -5,7 +5,6 @@ import { leagues } from '../../api/endpoints';
 import type { League } from '../../api/types';
 import { Card, Empty, ErrorNote, Field, InfoNote, Loader, Matchup, Status } from '../../components/ui';
 import { useAction, useLoad } from '../../hooks/useLoad';
-import { ImportFixtures } from './ImportFixtures';
 import { localInputInDays, money, relative, toIsoInstant, toLocalInput, when } from '../../lib/format';
 
 /**
@@ -18,7 +17,6 @@ import { localInputInDays, money, relative, toIsoInstant, toLocalInput, when } f
 export function LeagueContestsTab({ league, onChanged }: { league: League; onChanged: () => void }) {
   const list = useLoad(() => leagues.contests(league.id), [league.id]);
   const [creating, setCreating] = useState(false);
-  const [importing, setImporting] = useState(false);
 
   const canCreate =
     league.organizer && ['UPCOMING', 'OPEN', 'ACTIVE'].includes(league.status);
@@ -31,42 +29,12 @@ export function LeagueContestsTab({ league, onChanged }: { league: League; onCha
           {league.contestsCreated} of {league.totalContests} contests created
           {remaining > 0 ? ` · ${remaining} still to add` : ' · the league is full'}
         </p>
-        {canCreate && remaining > 0 && (
-          <div className="row gap">
-            <button
-              type="button"
-              className="btn btn-small"
-              onClick={() => {
-                setImporting((open) => !open);
-                setCreating(false);
-              }}
-            >
-              {importing ? 'Close import' : 'Import from spreadsheet'}
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary btn-small"
-              onClick={() => {
-                setCreating((open) => !open);
-                setImporting(false);
-              }}
-            >
-              {creating ? 'Close' : 'Add a contest'}
-            </button>
-          </div>
+        {canCreate && (
+          <button type="button" className="btn btn-primary btn-small" onClick={() => setCreating((open) => !open)}>
+            {creating ? 'Close' : 'Add a contest'}
+          </button>
         )}
       </div>
-
-      {importing && (
-        <ImportFixtures
-          league={league}
-          onImported={() => {
-            setImporting(false);
-            list.reload();
-            onChanged();
-          }}
-        />
-      )}
 
       {creating && (
         <CreateLeagueContest

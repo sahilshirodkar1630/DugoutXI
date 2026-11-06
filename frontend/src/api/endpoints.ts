@@ -10,8 +10,6 @@ import type {
   AuthResponse,
   Contest,
   ContestSummary,
-  FixtureImportResult,
-  FixtureRow,
   PeriodStats,
   StatsRange,
   TemporaryPassword,
@@ -103,9 +101,6 @@ export const leagues = {
 
   // contests inside the league
   contests: (id: number) => api.get<ContestSummary[]>(`/api/leagues/${id}/contests`),
-  /** Many matches at once, all or nothing. dryRun checks the list without creating anything. */
-  importFixtures: (id: number, rows: FixtureRow[], dryRun: boolean) =>
-    api.post<FixtureImportResult>(`/api/leagues/${id}/contests/import`, { rows, dryRun }),
   exportSeason: (id: number) => downloadFile(`/api/leagues/${id}/export`, 'Season.xlsx'),
 
   // the board

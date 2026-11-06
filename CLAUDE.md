@@ -36,7 +36,7 @@ Frontend: React 19, TypeScript, Vite, React Router. No state library and no data
 docker compose up -d                                                    # PostgreSQL 16 on 5432 (DB_PORT=5433 to move it)
 mvn spring-boot:run                                                     # backend on 8080
 mvn spring-boot:run -Dspring-boot.run.arguments=--app.dev-tools.enabled=true   # plus the dev shortcuts
-mvn test                                                                # 328 tests, needs Docker
+mvn test                                                                # 322 tests, needs Docker
 cd frontend && npm install && npm run dev                               # frontend on 5173
 cd frontend && npm test && npm run typecheck && npm run lint && npm run build
 node scripts/generate-test-cases.mjs                                    # rebuild docs/TEST_CASES.md
@@ -54,9 +54,6 @@ The role is read from the database on every request, so it takes effect at once.
   `must_change_password` makes the app show only the change-password screen until it is replaced. Any password
   change sets `password_changed_at`, and the JWT filter refuses tokens issued before it (whole seconds), which signs
   out every other session.
-- **Fixture import** (`contest/FixtureImportService`, `POST /api/leagues/{id}/contests/import`): all or nothing,
-  every row checked first, `dryRun` to preview; each match is then created through `ContestService.create`. The
-  frontend reads CSV (`lib/fixtures.ts`), day-first dates included.
 - **Stats by period** (`dashboard/PeriodStats`, a pure function like PayoutCalculator; `GET /api/me/stats/period`).
   Contests are placed in a period by start time; months are calendar months in India time.
 - **Excel exports** (`export/`, Apache POI): a league season for its members (picks only for started contests) and
@@ -175,7 +172,7 @@ either, change both:
 
 ## Tests
 
-328 backend (as Maven counts them), 67 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
+322 backend (as Maven counts them), 62 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
 migration, so triggers, generated columns and views are exercised rather than mocked. **Docker must be running.**
 
 `src/test/java/.../EndToEndJourneyTest.java` is the one to read first: a whole season through the real API, ending
