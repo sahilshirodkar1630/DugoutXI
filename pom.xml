@@ -73,6 +73,14 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- The OpenAPI description of the API, served at /v3/api-docs and shown by the Scalar page at /docs. API only:
+         the viewer is a static page (see ApiDocsController), so no Swagger UI jars. -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+      <version>2.6.0</version>
+    </dependency>
+
     <!-- Excel exports of a season and of a player's own history (export package). -->
     <dependency>
       <groupId>org.apache.poi</groupId>

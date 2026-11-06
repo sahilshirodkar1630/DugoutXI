@@ -41,7 +41,7 @@ ipl-league/
 │   ├── jobs/                    The scheduled half: locking, cutoffs, reminders
 │   ├── audit/                   The append-only audit log
 │   └── common/                  Errors, the clock, shared base entity
-├── src/test/java/               322 tests, including a full-season end-to-end run
+├── src/test/java/               328 tests, including a full-season end-to-end run
 ├── frontend/                    React 19 + TypeScript + Vite, 62 tests
 ├── postman/                     251 requests with assertions, in the order a season happens
 └── docs/TEST_CASES.md           Every test, generated from the sources
@@ -75,7 +75,12 @@ On <http://localhost:8080>. For trying things out by hand, start it with the dev
 mvn spring-boot:run -Dspring-boot.run.arguments=--app.dev-tools.enabled=true
 ```
 
-That adds a few admin-only endpoints that pull a contest's start time forward and run the scheduled jobs on demand,
+To browse the API, start it with `API_DOCS_ENABLED=true` and open <http://localhost:8080/docs>: every endpoint,
+grouped, with its request and response shapes, a curl example, and a "Test Request" button (paste a token from
+sign-in into the Authentication box first). The raw OpenAPI description is at `/v3/api-docs`, which Postman and
+most API tools can import.
+
+The dev-tools flag adds a few admin-only endpoints that pull a contest's start time forward and run the scheduled jobs on demand,
 so you do not have to wait for a real start time to see a contest lock. They do not exist unless you ask for them.
 
 ### 3. The frontend
@@ -109,7 +114,7 @@ the sign-in page alerts the admins, who send back a temporary password that must
 ## Tests
 
 ```bash
-mvn test                  # 322 backend tests
+mvn test                  # 328 backend tests
 cd frontend && npm test   # 62 frontend tests
 ```
 
@@ -206,6 +211,7 @@ members, such as a result correction or a rescheduled contest, are marked visibl
 | `DB_URL` / `DB_USER` / `DB_PASSWORD` | local Postgres | Database connection |
 | `CONTEST_MINIMUM_PLAYERS` | `2` | Below this a contest is cancelled at its start time rather than played |
 | `JOBS_ENABLED` | `true` | The scheduled jobs. Tests switch this off |
+| `API_DOCS_ENABLED` | `false` | The API reference at `/docs` and the OpenAPI description at `/v3/api-docs` |
 | `DEV_TOOLS_ENABLED` | `false` | The admin-only shortcuts. Never enable on anything real |
 | `ADMIN_EMAILS` | empty | Emails made admins at registration and on every startup |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Where the browser app is served from |
@@ -222,6 +228,5 @@ These are deliberate choices for this version, not oversights:
 - **The result is entered by hand.** There is no scorecard feed, so the organizer types it in — which is why it
   takes two steps and can be corrected.
 - **No sign-in rate limiting.** Worth adding before this is exposed to the internet.
-- **No OpenAPI document.** The Postman collection serves that purpose for now.
 - **No distributed lock library.** Not needed: the jobs use `FOR UPDATE SKIP LOCKED`, which is enough for several
   instances of this app.

@@ -40,6 +40,14 @@ class ApiEdgeCasesTest extends AbstractIntegrationTest {
     @Autowired JdbcTemplate jdbc;
     @Autowired ContestStartJob startJob;
 
+    // ---------- the API reference is off unless switched on ----------
+
+    @Test
+    void theApiReferenceIsOffByDefault() throws Exception {
+        mvc.perform(get("/v3/api-docs")).andExpect(status().isNotFound());
+        mvc.perform(get("/docs")).andExpect(status().isNotFound());
+    }
+
     // ---------- malformed requests always come back as a readable problem ----------
 
     @Test

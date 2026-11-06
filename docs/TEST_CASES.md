@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**303 backend tests across 29 classes, 62 frontend tests across 10 files.**
+**309 backend tests across 30 classes, 62 frontend tests across 10 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -16,12 +16,13 @@ cd frontend && npm test  # the frontend
 
 ## Backend
 
-### ApiEdgeCasesTest (integration, 18 tests)
+### ApiEdgeCasesTest (integration, 19 tests)
 
 `ApiEdgeCasesTest.java`
 
 The edges of the API that no single feature test owns: what comes back for malformed requests, the response fields the screens rely on, the admin listings, and the gaps found while reviewing the services.
 
+- The Api Reference Is Off By Default
 - Broken Json Is A 400 With A Detail
 - A Date That Does Not Parse Is A 400
 - An Id That Is Not A Number Is A 400 Not A 500
@@ -139,6 +140,18 @@ Password changes and resets. There is no email, so a locked-out player asks the 
 - Only An Admin Can Reset A Password And Only With A Reason
 - Forgot Password Always Answers The Same And Tells The Admins Once An Hour
 - Forgot Password Needs No Sign In But An Email
+
+### ApiDocsTest (integration, 5 tests)
+
+`common/ApiDocsTest.java`
+
+The API reference: the OpenAPI description springdoc generates from the controllers, and the Scalar page that shows it. Guards that every endpoint is described and grouped, so a new one cannot slip in undocumented.
+
+- The Description Is Served Without Signing In
+- Every Endpoint Has A Summary And A Known Group
+- Signing In Needs No Token But Everything Else Does
+- Only The Api Is Described Not The Docs Page Itself
+- The Reference Page Loads Scalar Pointed At The Description
 
 ### ContestFlowTest (integration, 26 tests)
 

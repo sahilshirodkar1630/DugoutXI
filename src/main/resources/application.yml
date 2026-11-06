@@ -17,6 +17,15 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+springdoc:
+  api-docs:
+    # The OpenAPI description at /v3/api-docs and the reference page at /docs. Off by default so a public
+    # deployment does not publish every admin endpoint; set API_DOCS_ENABLED=true locally or where you want it.
+    enabled: ${API_DOCS_ENABLED:false}
+  paths-to-match: /api/**
+  default-produces-media-type: application/json
+  writer-with-order-by-keys: true
+
 app:
   # Comma-separated emails made admins at registration and on every startup. After that, admins promote others
   # from the Accounts screen. Leave empty to manage admins only from the app (or the database).

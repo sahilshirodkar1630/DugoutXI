@@ -1,5 +1,7 @@
 package com.sahilprojects.bettingApp.export;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.sahilprojects.bettingApp.auth.AuthenticatedUser;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.charset.StandardCharsets;
 
 /** Excel downloads. See ExportService for what each workbook holds. */
+@Tag(name = "Exports")
 @RestController
 @RequestMapping("/api")
 public class ExportController {
@@ -27,11 +30,15 @@ public class ExportController {
         this.exports = exports;
     }
 
+    @Operation(summary = "Download a league season (Excel)",
+            description = "Members only. Sheets: League, Table, Matches, Picks (started matches only), Members, Settle up.")
     @GetMapping("/leagues/{leagueId}/export")
     public ResponseEntity<byte[]> league(@AuthenticationPrincipal AuthenticatedUser actor, @PathVariable Long leagueId) {
         return download(exports.league(actor, leagueId));
     }
 
+    @Operation(summary = "Download your own history (Excel)",
+            description = "Summary, by month, every contest with your pick, your leagues, payouts, and the one-off contests you organise.")
     @GetMapping("/me/export")
     public ResponseEntity<byte[]> mine(@AuthenticationPrincipal AuthenticatedUser actor) {
         return download(exports.mine(actor));

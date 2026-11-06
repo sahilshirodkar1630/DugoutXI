@@ -1,5 +1,7 @@
 package com.sahilprojects.bettingApp.contest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.sahilprojects.bettingApp.auth.AuthenticatedUser;
 import com.sahilprojects.bettingApp.contest.dto.MyPredictionResponse;
 import com.sahilprojects.bettingApp.contest.dto.PredictionRequest;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Picks")
 @RestController
 @RequestMapping("/api/contests/{contestId}/predictions")
 public class PredictionController {
@@ -21,6 +24,8 @@ public class PredictionController {
     }
 
     /** Make or change my pick. Allowed until the contest starts. */
+    @Operation(summary = "Pick the winner",
+            description = "Confirmed players only, and only before the start time. You can change your pick until then.")
     @PutMapping("/me")
     public MyPredictionResponse predict(@AuthenticationPrincipal AuthenticatedUser actor,
                                         @PathVariable Long contestId,
@@ -28,6 +33,7 @@ public class PredictionController {
         return service.predict(actor, contestId, request.teamId());
     }
 
+    @Operation(summary = "Your pick")
     @GetMapping("/me")
     public MyPredictionResponse myPrediction(@AuthenticationPrincipal AuthenticatedUser actor,
                                              @PathVariable Long contestId) {
@@ -35,6 +41,8 @@ public class PredictionController {
     }
 
     /** Everyone's picks. Refused until the contest starts. */
+    @Operation(summary = "Everyone's picks",
+            description = "Empty until the contest has started, so nobody can copy a pick.")
     @GetMapping
     public List<PredictionRowResponse> all(@AuthenticationPrincipal AuthenticatedUser actor,
                                            @PathVariable Long contestId) {

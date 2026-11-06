@@ -36,7 +36,8 @@ Frontend: React 19, TypeScript, Vite, React Router. No state library and no data
 docker compose up -d                                                    # PostgreSQL 16 on 5432 (DB_PORT=5433 to move it)
 mvn spring-boot:run                                                     # backend on 8080
 mvn spring-boot:run -Dspring-boot.run.arguments=--app.dev-tools.enabled=true   # plus the dev shortcuts
-mvn test                                                                # 322 tests, needs Docker
+API_DOCS_ENABLED=true mvn spring-boot:run                               # plus the API reference at /docs
+mvn test                                                                # 328 tests, needs Docker
 cd frontend && npm install && npm run dev                               # frontend on 5173
 cd frontend && npm test && npm run typecheck && npm run lint && npm run build
 node scripts/generate-test-cases.mjs                                    # rebuild docs/TEST_CASES.md
@@ -58,6 +59,11 @@ The role is read from the database on every request, so it takes effect at once.
   Contests are placed in a period by start time; months are calendar months in India time.
 - **Excel exports** (`export/`, Apache POI): a league season for its members (picks only for started contests) and
   a personal history. Column widths are measured by hand because POI autoSizeColumn needs fonts on the server.
+- **API reference** (springdoc + Scalar): springdoc generates the OpenAPI description at `/v3/api-docs` from the
+  controllers; `common/ApiDocsController` serves a Scalar page at `/docs` (script pinned to an exact version). Both are
+  off unless `API_DOCS_ENABLED=true`. **Every new endpoint needs an `@Operation(summary = ...)` and its controller a
+  `@Tag` from `ApiDocsConfig.TAGS`**; `ApiDocsTest` fails otherwise. The Postman collection stays as the scripted
+  run-through of a season.
 - **WhatsApp sharing** is wa.me links built in the frontend (`lib/share.ts`); the app never sends anything itself.
 
 ## Layout
@@ -172,7 +178,7 @@ either, change both:
 
 ## Tests
 
-322 backend (as Maven counts them), 62 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
+328 backend (as Maven counts them), 62 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
 migration, so triggers, generated columns and views are exercised rather than mocked. **Docker must be running.**
 
 `src/test/java/.../EndToEndJourneyTest.java` is the one to read first: a whole season through the real API, ending
@@ -183,5 +189,5 @@ nudges times in the database when a test needs a deadline to have passed).
 
 ## Known gaps, deliberately left
 
-No sign-in rate limiting. No OpenAPI document (the Postman collection serves that purpose). No scorecard feed —
+No sign-in rate limiting. No scorecard feed —
 the organizer types the result in, which is why it takes two steps and can be corrected.

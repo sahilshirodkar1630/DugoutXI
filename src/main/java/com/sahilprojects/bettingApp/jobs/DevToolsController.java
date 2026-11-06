@@ -1,5 +1,7 @@
 package com.sahilprojects.bettingApp.jobs;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.sahilprojects.bettingApp.auth.AccessGuard;
 import com.sahilprojects.bettingApp.auth.AuthenticatedUser;
 import com.sahilprojects.bettingApp.common.NotFoundException;
@@ -30,6 +32,7 @@ import java.util.Map;
  * Turn them on with {@code app.dev-tools.enabled=true}. They change data, so they are admin-only and should never
  * be enabled on anything real.
  */
+@Tag(name = "Dev tools")
 @RestController
 @RequestMapping("/api/dev")
 @ConditionalOnProperty(name = "app.dev-tools.enabled", havingValue = "true")
@@ -65,6 +68,8 @@ public class DevToolsController {
     }
 
     /** Pulls a contest's start time back to a few seconds ago, so the start job will pick it up. */
+    @Operation(summary = "Pull a contest's start time forward",
+            description = "Admin only, and only when app.dev-tools.enabled is true.")
     @PostMapping("/contests/{contestId}/fast-forward")
     public Map<String, Object> fastForward(@AuthenticationPrincipal AuthenticatedUser actor,
                                            @PathVariable Long contestId) {
@@ -91,6 +96,8 @@ public class DevToolsController {
     }
 
     /** Runs every scheduled job once, in the order the scheduler would. */
+    @Operation(summary = "Run the scheduled jobs now",
+            description = "Admin only, dev tools only.")
     @PostMapping("/jobs/run")
     public Map<String, Object> runJobs(@AuthenticationPrincipal AuthenticatedUser actor) {
         accessGuard.requireAdmin(actor);
@@ -104,6 +111,8 @@ public class DevToolsController {
     }
 
     /** Locks one contest now, without waiting for the scheduler. */
+    @Operation(summary = "Start (lock) a contest now",
+            description = "Admin only, dev tools only.")
     @PostMapping("/contests/{contestId}/start-now")
     public Map<String, Object> startNow(@AuthenticationPrincipal AuthenticatedUser actor,
                                         @PathVariable Long contestId) {
