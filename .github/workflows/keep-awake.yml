@@ -1,0 +1,27 @@
+# Backup keep-awake ping for the free Render backend (the main one is cron-job.org, see docs/DEPLOY.md).
+# Render puts a free service to sleep after 15 idle minutes, and the scheduled jobs (locking matches at their start,
+# reminders, cutting off unpaid places) only run while it is awake. GitHub runs scheduled workflows on a best-effort
+# basis and can be late, which is why this is the backup rather than the only ping.
+name: Keep backend awake
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the health check
+        run: |
+          for attempt in 1 2 3; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 https://dugout-xi-api.onrender.com/api/health || true)
+            echo "attempt $attempt: $status"
+            [ "$status" = "200" ] && exit 0
+            sleep 20
+          done
+          echo "The backend did not answer; it may still be waking up."

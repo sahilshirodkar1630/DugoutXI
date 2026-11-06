@@ -56,6 +56,9 @@ sessions. The tables are created by the app itself (Flyway) on its first start.
 
 750 free Render hours a month cover one service running all month.
 
+A second, backup ping runs from the repository itself (`.github/workflows/keep-awake.yml`, every 10 minutes). GitHub can run
+scheduled jobs late and pauses them after 60 days without commits, so it backs up cron-job.org rather than replacing it.
+
 ## 5. Check it
 
 Open the Vercel address and:
