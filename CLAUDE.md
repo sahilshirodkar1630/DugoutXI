@@ -178,7 +178,7 @@ either, change both:
 
 ## Tests
 
-329 backend (as Maven counts them), 70 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
+329 backend (as Maven counts them), 71 frontend; `docs/TEST_CASES.md` lists every one. Integration tests start a real PostgreSQL 16 through Testcontainers and run every
 migration, so triggers, generated columns and views are exercised rather than mocked. **Docker must be running.**
 
 `src/test/java/.../EndToEndJourneyTest.java` is the one to read first: a whole season through the real API, ending

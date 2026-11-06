@@ -28,6 +28,16 @@ describe('AboutPage', () => {
     );
     expect(screen.getByRole('link', { name: 'Call 9867141653' })).toHaveAttribute('href', 'tel:+919867141653');
     expect(screen.getByRole('link', { name: 'WhatsApp' })).toHaveAttribute('href', 'https://wa.me/919867141653');
+    expect(screen.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/sahilshirodkar/',
+    );
+  });
+
+  it('puts the builder card straight after the introduction', () => {
+    renderWithRouter(<AboutPage />);
+    const order = [...document.querySelectorAll('h1, h2')].map((h) => h.textContent);
+    expect(order.slice(0, 3)).toEqual(['Dugout XI', 'Built by Sahil Shirodkar', 'User guide']);
   });
 
   it('has a way back to sign in when opened signed out', () => {

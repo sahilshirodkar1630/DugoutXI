@@ -6,7 +6,7 @@ React 19, TypeScript and Vite. Talks to the Spring Boot backend in the folder ab
 npm install
 npm run dev        # http://localhost:5173
 npm run share      # the same, reachable from phones on your Wi-Fi; the API goes through it at /api (API_TARGET, default 8080)
-npm test           # 70 tests
+npm test           # 71 tests
 npm run typecheck  # tsc, no emit
 npm run build      # production bundle into dist/
 ```

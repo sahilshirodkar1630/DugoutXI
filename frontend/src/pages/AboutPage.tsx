@@ -16,6 +16,7 @@ const CONTACT = {
   email: 'sahilshirodkar1630@gmail.com',
   phone: '9867141653',
   whatsapp: '919867141653',
+  linkedin: 'https://www.linkedin.com/in/sahilshirodkar/',
 };
 
 export function AboutPage({ standalone = false }: { standalone?: boolean }) {
@@ -37,6 +38,34 @@ export function AboutPage({ standalone = false }: { standalone?: boolean }) {
           <strong>No money moves through the app.</strong> You pay the organizer directly (UPI, cash, whatever your
           group uses), and the organizer pays winnings back the same way. Dugout XI records who paid, who picked what,
           who won, and who is owed what.
+        </p>
+      </section>
+
+      <section className="card about-contact">
+        <div>
+          <h2>Built by {CONTACT.name}</h2>
+          <p className="muted" style={{ margin: '2px 0 0' }}>
+            Dugout XI is a free, ad-free app made for friends who love cricket. Found a problem, or have an idea? Get
+            in touch.
+          </p>
+        </div>
+        <div className="about-contact-links">
+          <a className="btn btn-primary" href={`mailto:${CONTACT.email}?subject=${encodeURIComponent('Dugout XI')}`}>
+            Email {CONTACT.email}
+          </a>
+          <a className="btn" href={`tel:+91${CONTACT.phone}`}>
+            Call {CONTACT.phone}
+          </a>
+          <a className="btn" href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+          <a className="btn" href={CONTACT.linkedin} target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </div>
+        <p className="muted small" style={{ margin: 0 }}>
+          When reporting a problem, mention the league or contest, what you tapped, and what you expected to happen. A
+          screenshot helps.
         </p>
       </section>
 
@@ -204,30 +233,6 @@ export function AboutPage({ standalone = false }: { standalone?: boolean }) {
         </ul>
       </Card>
 
-      <section className="card about-contact">
-        <div>
-          <h2>Built by {CONTACT.name}</h2>
-          <p className="muted" style={{ margin: '2px 0 0' }}>
-            Dugout XI is a free, ad-free app made for friends who love cricket. Found a problem, or have an idea? Get
-            in touch.
-          </p>
-        </div>
-        <div className="about-contact-links">
-          <a className="btn btn-primary" href={`mailto:${CONTACT.email}?subject=${encodeURIComponent('Dugout XI')}`}>
-            Email {CONTACT.email}
-          </a>
-          <a className="btn" href={`tel:+91${CONTACT.phone}`}>
-            Call {CONTACT.phone}
-          </a>
-          <a className="btn" href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener noreferrer">
-            WhatsApp
-          </a>
-        </div>
-        <p className="muted small" style={{ margin: 0 }}>
-          When reporting a problem, mention the league or contest, what you tapped, and what you expected to happen. A
-          screenshot helps.
-        </p>
-      </section>
 
       <p className="muted small about-foot">Dugout XI · © 2026 {CONTACT.name}</p>
     </div>
