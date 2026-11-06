@@ -6,6 +6,11 @@ import { AuthProvider } from './auth/AuthContext';
 import '@fontsource-variable/inter';
 import './index.css';
 import { chooseMode, savedMode } from './lib/theme';
+import { wakeServer } from './api/client';
+
+// Nudge the backend awake the moment the site opens: on the free host it sleeps after a quiet spell, and waking takes
+// about a minute, which is roughly how long somebody takes to type their email and password.
+void wakeServer();
 
 // index.html already set the saved Day/Dark choice before the page drew; this also matches the phone's browser bar.
 const saved = savedMode();

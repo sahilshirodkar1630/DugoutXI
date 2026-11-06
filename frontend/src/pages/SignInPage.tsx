@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { auth } from '../api/endpoints';
 import { useAuth } from '../auth/useAuth';
@@ -16,6 +16,7 @@ import { useAction } from '../hooks/useLoad';
 export function SignInPage() {
   const { signIn, register } = useAuth();
   const { run, busy, error } = useAction();
+  const slow = useSlow(busy);
   const [params] = useSearchParams();
   const invite = inviteFor(params.get('next'));
   // Somebody arriving from an invite is most likely new, so they start on the form to make an account.
@@ -89,6 +90,11 @@ export function SignInPage() {
           </Field>
 
           <ErrorNote>{error}</ErrorNote>
+          {slow && (
+            <InfoNote>
+              Waking the server… After a quiet spell the first sign-in can take up to a minute. Keep this page open.
+            </InfoNote>
+          )}
 
           <button type="submit" className="btn btn-primary" disabled={busy}>
             {busy ? 'Just a moment…' : mode === 'sign-in' ? 'Sign in' : 'Create account'}
@@ -182,4 +188,18 @@ function inviteFor(next: string | null): string | null {
   const contest = /^\/contests\/(\d+)/.exec(next);
   if (contest) return `contest #${contest[1]}`;
   return null;
+}
+
+/** True once `busy` has lasted more than a few seconds: long enough that the server is probably waking up. */
+function useSlow(busy: boolean): boolean {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    if (!busy) {
+      setSlow(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setSlow(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, [busy]);
+  return slow;
 }

@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
-import { afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { wakeTiming } from '../api/client';
 
 /**
  * Test setup.
@@ -12,4 +13,10 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   localStorage.clear();
+});
+
+// A sleeping server is waited for in the app; in tests nothing is asleep, so give up at once rather than hang.
+beforeEach(() => {
+  wakeTiming.limitMs = 0;
+  wakeTiming.pollMs = 1;
 });

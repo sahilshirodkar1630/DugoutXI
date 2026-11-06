@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, api, fileNameFrom, onUnauthorized, request, tokenStore } from './client';
+import { ApiError, SERVER_WAKING_MESSAGE, api, fileNameFrom, onUnauthorized, request, tokenStore, wakeTiming } from './client';
 
 /**
  * What the API client has to get right, since every screen depends on it.
@@ -124,5 +124,59 @@ describe('fileNameFrom', () => {
     ).toBe('Office League season 2026-11-06.xlsx');
     expect(fileNameFrom('attachment; filename="Season.xlsx"')).toBe('Season.xlsx');
     expect(fileNameFrom(null)).toBeNull();
+  });
+});
+
+/**
+ * The free host sleeps after a quiet spell; while it wakes, the site forwarding answers 502/503/504 or nothing.
+ * Reads and signing in wait for the wake and go again; changes are not resent, because they may already have arrived.
+ */
+describe('a sleeping server', () => {
+  beforeEach(() => {
+    wakeTiming.limitMs = 1000;
+    wakeTiming.pollMs = 5;
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const reply = (status: number, body: unknown = {}) =>
+    ({ ok: status < 400, status, text: () => Promise.resolve(JSON.stringify(body)) }) as unknown as Response;
+
+  function server(first: number) {
+    let woken = false;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (String(url).endsWith('/api/health')) {
+        woken = true;
+        return Promise.resolve(reply(200, { status: 'UP' }));
+      }
+      if (!woken) return Promise.resolve(reply(first));
+      return Promise.resolve(reply(200, { ok: true, method: init?.method ?? 'GET' }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  }
+
+  it('waits for a read, then sends it again', async () => {
+    const fetchMock = server(504);
+    await expect(api.get('/api/leagues')).resolves.toEqual({ ok: true, method: 'GET' });
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/api/leagues'))).toHaveLength(2);
+  });
+
+  it('retries signing in, which changes nothing', async () => {
+    server(502);
+    await expect(
+      request('/api/auth/login', { method: 'POST', body: { email: 'a@b.c', password: 'x' }, anonymous: true }),
+    ).resolves.toMatchObject({ ok: true });
+  });
+
+  it('does not resend a change, and says to try again', async () => {
+    const fetchMock = server(504);
+    await expect(api.post('/api/leagues/1/join-requests')).rejects.toSatisfy((error: unknown) => {
+      expect((error as ApiError).message).toBe(SERVER_WAKING_MESSAGE);
+      return true;
+    });
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('join-requests'))).toHaveLength(1);
   });
 });

@@ -73,7 +73,68 @@ interface RequestOptions {
   signal?: AbortSignal;
 }
 
+/**
+ * The free host puts the backend to sleep after a quiet spell, and waking it takes up to a minute or more. While it
+ * wakes, the site's /api forwarding gives up with a gateway error (502, 503, 504) or the connection fails.
+ */
+const WAKING_STATUSES = new Set([502, 503, 504]);
+/** How long to wait for a wake, and how often to look. Tests shorten these. */
+export const wakeTiming = { limitMs: 150_000, pollMs: 4000 };
+
+let waking: Promise<boolean> | null = null;
+
+/**
+ * Starts the backend waking and resolves true once /api/health answers (false after wakeTiming.limitMs). Called as soon as
+ * the app opens, so the server is usually awake by the time somebody has typed their password, and again whenever a
+ * request finds it asleep. Concurrent callers share one wait.
+ */
+export function wakeServer(): Promise<boolean> {
+  if (waking) return waking;
+  waking = (async () => {
+    const until = Date.now() + wakeTiming.limitMs;
+    while (Date.now() < until) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/health`, { cache: 'no-store' });
+        if (res.ok) return true;
+      } catch {
+        // still asleep, or no signal
+      }
+      await new Promise((resolve) => setTimeout(resolve, wakeTiming.pollMs));
+    }
+    return false;
+  })().finally(() => {
+    waking = null;
+  });
+  return waking;
+}
+
+/**
+ * Only calls that change nothing are retried by themselves after a wake: reads, and signing in. A change (joining,
+ * accepting, marking paid) may already have reached the server before the forwarding gave up, so repeating it could
+ * do it twice; the person is asked to try again instead.
+ */
+function safeToRetry(method: string, path: string): boolean {
+  return method === 'GET' || path === '/api/auth/login';
+}
+
+export const SERVER_WAKING_MESSAGE =
+  'The server was asleep and is waking up. Wait a few seconds and try again.';
+
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const method = options.method ?? 'GET';
+  try {
+    return await send<T>(path, options);
+  } catch (cause) {
+    if (!(cause instanceof ApiError) || cause.code !== 'WAKING') throw cause;
+    const awake = await wakeServer();
+    if (awake && safeToRetry(method, path)) {
+      return send<T>(path, options);
+    }
+    throw new ApiError(503, 'WAKING', awake ? SERVER_WAKING_MESSAGE : 'Could not reach the server. Check your connection and try again.');
+  }
+}
+
+async function send<T>(path: string, options: RequestOptions): Promise<T> {
   const { method = 'GET', body, anonymous = false, signal } = options;
   const headers: Record<string, string> = {};
   if (body !== undefined) {
@@ -96,7 +157,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     if (signal?.aborted) {
       throw cause;
     }
-    throw new ApiError(0, 'NETWORK', 'Could not reach the server. Is the backend running?');
+    // No answer at all: most often a backend that is still waking up.
+    throw new ApiError(0, 'WAKING', 'Could not reach the server.');
+  }
+
+  if (WAKING_STATUSES.has(response.status)) {
+    throw new ApiError(response.status, 'WAKING', 'The server is waking up.');
   }
 
   if (response.status === 204) {

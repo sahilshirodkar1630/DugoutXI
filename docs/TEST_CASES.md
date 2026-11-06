@@ -1,7 +1,7 @@
 # Test cases
 
 Generated from the test sources, so this list and the tests cannot drift apart.
-**310 backend tests across 30 classes, 64 frontend tests across 11 files.**
+**310 backend tests across 30 classes, 67 frontend tests across 11 files.**
 
 Regenerate it with `node scripts/generate-test-cases.mjs` after adding or renaming a test.
 
@@ -526,7 +526,7 @@ The first admins come from server configuration (app.admin-emails), never from a
 
 ## Frontend
 
-### client.test.ts (9 tests)
+### client.test.ts (12 tests)
 
 `src/api/client.test.ts`
 
@@ -539,6 +539,9 @@ The first admins come from server configuration (app.admin-emails), never from a
 - Falls back to a sensible message when the body is not a problem document
 - Handles a 204 with no body
 - Prefers the UTF-8 name the backend sends, and falls back to the plain one
+- Waits for a read, then sends it again
+- Retries signing in, which changes nothing
+- Does not resend a change, and says to try again
 
 ### ChangePasswordForm.test.tsx (2 tests)
 
